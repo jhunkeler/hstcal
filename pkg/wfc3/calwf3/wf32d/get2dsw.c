@@ -18,7 +18,7 @@ static int GetSw (Hdr *, char *, int *);
 
  9 Oct 2014 PLL - Created based on getccdsw.c
  */
-int Get2dSw (CalSwitch *wf32, Hdr *phdr) {
+int Get2dSw (CalSwitch *wf32d, Hdr *phdr) {
 
     extern int status;
     FitsKw key;        /* keyword location in header */
