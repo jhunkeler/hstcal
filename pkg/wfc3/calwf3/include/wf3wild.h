@@ -3,6 +3,8 @@
    The IGNORE values mean that the column is not relevant for the
    particular table.
 */
+#ifndef WF3WILD_H
+#define WF3WILD_H
 
 # define  INT_WILDCARD      -1
 # define  FLT_WILDCARD      -1.0
@@ -12,3 +14,5 @@
 # define  FLT_IGNORE        -999.0
 # define  STRING_IGNORE_1  "N/A"
 # define  STRING_IGNORE_2  "NOT APPLICABLE"
+
+#endif

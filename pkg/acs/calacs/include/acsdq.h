@@ -1,4 +1,6 @@
 /* Data quality flags for CALACS. */
+#ifndef ACSDQ_H
+#define ACSDQ_H
 
 # define GOODPIXEL         0    /* OK */
 # define SOFTERR           1    /* Reed-Solomon decoding error */
@@ -17,3 +19,5 @@
 # define DATAREJECT     8192    /* rejected during image combination */
 /* # define TBD        16384    */
 /* # define TBD        32768    */
+
+#endif

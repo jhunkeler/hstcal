@@ -1,3 +1,6 @@
+#ifndef WF3OMIT_H
+#define WF3OMIT_H
+
 /* These are the calibration steps that by default are not performed.
    This file is included only by lib/defswitch.c.
 */
@@ -6,3 +9,4 @@
 
 static char omitsw[WF3_N_OMIT][9] = {"atodcorr", "shadcorr"};
 
+#endif

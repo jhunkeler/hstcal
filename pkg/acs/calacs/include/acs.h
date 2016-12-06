@@ -1,5 +1,8 @@
 /* acs.h generic header for calacs */
 /*      */
+#ifndef ACS_H
+#define ACS_H
+
 # include <stdio.h>             /* To insure that FILE is defined for TrlPtr */
 # include "imphttab.h"
 
@@ -158,3 +161,5 @@ void trlopenerr (char *filename);
 void trlreaderr (char *name);
 void trlkwerr (char *keyword, char *file);
 void trlfilerr (char *name);
+
+#endif

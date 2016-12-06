@@ -1,3 +1,6 @@
+#ifndef ACSCOOR_H
+#define ACSCOOR_H
+
 /* calibration switches for 'acsccd', 'acscte', and 'acs2d' */
 
 typedef struct {
@@ -41,3 +44,5 @@ typedef struct {
     int shadcorr;
     int expscorr;
 } CalSwitch;
+
+#endif

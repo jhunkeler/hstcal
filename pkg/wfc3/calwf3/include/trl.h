@@ -1,3 +1,5 @@
+#ifndef TRL_H
+#define TRL_H
 
 # define TRL_EXTN   ".tra"      /* default extension for Trailer files */
 # define FITS_EXTN  ".fits"     /* default extension */
@@ -20,3 +22,5 @@ void trlopenerr (char *filename);
 void trlreaderr (char *name);
 void trlkwerr (char *keyword, char *file);
 void trlfilerr (char *name);
+
+#endif

@@ -1,3 +1,6 @@
+#ifndef WF3CORR_H
+#define WF3COOR_H
+
 /* calibration switches for 'wf3ccd' and 'wf3ir' */
 
 /* Revision history:
@@ -45,3 +48,22 @@ typedef struct {
 
 } IR_Switch;
 
+typedef struct {
+    int atodcorr;
+    int biascorr;
+    int blevcorr;
+    int crcorr;
+    int darkcorr;
+    int flashcorr;
+    int dqicorr;
+    int flatcorr;
+    int pctecorr;
+    int glincorr;
+    int lflgcorr;
+    int photcorr;
+    int rptcorr;
+    int shadcorr;
+    int expscorr;
+} CalSwitch;
+
+#endif

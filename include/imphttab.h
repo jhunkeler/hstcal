@@ -1,3 +1,6 @@
+#ifndef IMPHTTAB_H
+#define IMPHTTAB_H
+
 # include "c_iraf.h"  /* For Bool type */
 # include "xtables.h" /* for SZ_COLNAME*/
 
@@ -156,3 +159,5 @@ typedef struct {
 int GetPhotTab (PhotPar *obs, char *photmode);
 void InitPhotPar(PhotPar *obs, char *name, char *pedigree);
 void FreePhotPar(PhotPar *obs);
+
+#endif

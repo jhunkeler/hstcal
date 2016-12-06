@@ -1,6 +1,8 @@
 /* The header file acs.h must be called prior to calling this
     file, in order to define the macros used here.
 */
+#ifndef ACSREJ_H
+#define ACSREJ_H
 
 /* define the user input parameter constants */
 # define    TOTAL       0
@@ -36,3 +38,5 @@ typedef struct {
     int     verbose;
     int     newbias;
 } clpar;
+
+#endif

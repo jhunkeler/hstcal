@@ -1,3 +1,6 @@
+#ifndef MSG_H
+#define MSG_H
+
 # define SZ_CBUF           24  /* small buffer for e.g. rootname */
 # define SZ_FNAME          255
 # define SZ_LINE           255
@@ -24,3 +27,4 @@ void ctewarn (char *message);
 # define WARN_PREFIX    "Warning    "
 # define ERR_PREFIX     "ERROR:    "
 
+#endif

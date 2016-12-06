@@ -10,6 +10,9 @@
     4-Dec-2001 WJH: Added expstart and expend.
 */
 
+#ifndef ACSINFO_H
+#define ACSINFO_H
+
 # define NAMPS  4    /* Maximum number of amps for a single readout */
 
 /* Structure describing SINGLE CHIP exposure and its reference files */
@@ -154,3 +157,5 @@ typedef struct {
     ErrHdrLine *err;    /* Array of error data lines */
     DQHdrLine *dq;      /* Array of DQ data lines */
 } ACSsect;
+
+#endif

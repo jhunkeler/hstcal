@@ -1,4 +1,6 @@
 /* Error codes for calacs. */
+#ifndef ACSERR_H
+#define ACSERR_H
 
 # define ACS_OK                 0
 
@@ -38,3 +40,5 @@
 
 # define INVALID_VALUE          1111
 # define UNSUPPORTED_APERTURE   1030
+
+#endif

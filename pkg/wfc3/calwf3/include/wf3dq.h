@@ -2,6 +2,8 @@
 /* 2009-01-28 	H.Bushouse	New WFC3 DQ assignments (PR 61741). 
    2015  M. Sosey               Sink pixels added to the mask, see #1093
 */
+#ifndef WF3DQ_H
+#define WF3DQ_H
 
 # define GOODPIXEL         0    /* OK */
 # define SOFTERR           1    /* Reed-Solomon decoding error */
@@ -25,3 +27,5 @@
 # define HIGH_CURVATURE 16384   /* pixel has more than max CR's  */
 # define CROSSTALK     16384   /* ghost or crosstalk  */
 # define RESERVED2     32768    /* can't use */
+
+#endif

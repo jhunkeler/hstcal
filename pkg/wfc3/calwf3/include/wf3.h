@@ -1,4 +1,6 @@
 /* wf3.h generic header for calwf3 */
+#ifndef WF3_H
+#define WF3_H
 
 # include <stdio.h>             /* To insure that FILE is defined for TrlPtr */
 # include "msg.h"
@@ -126,3 +128,5 @@ typedef struct {
 # define TRL_PREFIX     "CALWF3BEG"
 
 # include "trl.h"
+
+#endif
