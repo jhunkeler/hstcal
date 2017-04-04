@@ -5,7 +5,7 @@ env:
   global:
     # Set defaults to avoid repeating in most cases
     - ASTROCONDA=http://ssb.stsci.edu/astroconda
-    - CONDA_DEPS="cfitsio curl gcc pkg-config"
+    - CONDA_DEPS="cfitsio curl gcc pkg-config pytest requests numpy astropy"
     - EXE_PREFIX="/tmp/miniconda3"
     - PYTHON_VERSION=3.6
     - WAF_ARGS_CONFIGURE="-v"
@@ -28,6 +28,8 @@ matrix:
 
   - os: linux
     compiler: gcc
+    env:
+      - SETUP_CMD="--remote-data"
 
   - os: osx
     compiler: clang
