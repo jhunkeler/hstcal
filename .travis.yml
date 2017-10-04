@@ -13,61 +13,73 @@ matrix:
   fast_finish: true
 
   include:
-  - os: linux
-    sudo: false
-    compiler: gcc
-    env:
-      - PYTHON_VERSION=2.7
+  #  - os: linux
+  #    sudo: false
+  #    compiler: gcc
+  #    env:
+  #      - PYTHON_VERSION=2.7
+  #
+  #  - os: linux
+  #    sudo: false
+  #    compiler: gcc
+  #    env:
+  #      - PYTHON_VERSION=3.5
+  #
+  #  - os: linux
+  #    sudo: false
+  #    compiler: gcc
+  #
+  #  - os: osx
+  #    env:
+  #      - PYTHON_VERSION=2.7
+  #      - CFLAGS="-m64"
+  #      - LDFLAGS="-m64 -Wl,-rpath $EXE_PREFIX/envs/test/lib"
+  #
+  #  - os: osx
+  #    env:
+  #      - PYTHON_VERSION=3.5
+  #      - CFLAGS="-m64"
+  #      - LDFLAGS="-m64 -Wl,-rpath $EXE_PREFIX/envs/test/lib"
+  #
+  #  - os: osx
+  #    env:
+  #      - CFLAGS="-m64"
+  #      - LDFLAGS="-m64 -Wl,-rpath $EXE_PREFIX/envs/test/lib"
+  #
+  #  - os: osx
+  #    compiler: clang
+  #    env:
+  #      - PYTHON_VERSION=2.7
+  #      - CC="clang"
+  #      - CFLAGS="-arch x86_64"
+  #      - LDFLAGS="-arch x86_64"
+  #
+  #  - os: osx
+  #    compiler: clang
+  #    env:
+  #      - PYTHON_VERSION=3.5
+  #      - CC="clang"
+  #      - CFLAGS="-arch x86_64"
+  #      - LDFLAGS="-arch x86_64"
+  #
+  #  - os: osx
+  #    compiler: clang
+  #    env:
+  #      - CC="clang"
+  #      - CFLAGS="-arch x86_64"
+  #      - LDFLAGS="-arch x86_64"
 
   - os: linux
-    sudo: false
-    compiler: gcc
-    env:
-      - PYTHON_VERSION=3.5
-
-  - os: linux
-    sudo: false
-    compiler: gcc
-
-  - os: osx
+    compiler:
+      - gcc
+      - clang
     env:
       - PYTHON_VERSION=2.7
-      - CFLAGS="-m64"
-      - LDFLAGS="-m64 -Wl,-rpath $EXE_PREFIX/envs/test/lib"
+      - STANAL=scan-build
+      - CFLAGS="-I$CONDA_PREFIX/include"
+      - LDFLAGS="-L$CONDA_PREFIX/lib"
+      - FLAG_CFITSIO="--use-system-cfitsio"
 
-  - os: osx
-    env:
-      - PYTHON_VERSION=3.5
-      - CFLAGS="-m64"
-      - LDFLAGS="-m64 -Wl,-rpath $EXE_PREFIX/envs/test/lib"
-
-  - os: osx
-    env:
-      - CFLAGS="-m64"
-      - LDFLAGS="-m64 -Wl,-rpath $EXE_PREFIX/envs/test/lib"
-
-  - os: osx
-    compiler: clang
-    env:
-      - PYTHON_VERSION=2.7
-      - CC="clang"
-      - CFLAGS="-arch x86_64"
-      - LDFLAGS="-arch x86_64"
-
-  - os: osx
-    compiler: clang
-    env:
-      - PYTHON_VERSION=3.5
-      - CC="clang"
-      - CFLAGS="-arch x86_64"
-      - LDFLAGS="-arch x86_64"
-
-  - os: osx
-    compiler: clang
-    env:
-      - CC="clang"
-      - CFLAGS="-arch x86_64"
-      - LDFLAGS="-arch x86_64"
 
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export CONDA_INSTALLER=https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh; fi
@@ -77,12 +89,13 @@ before_install:
   - export PATH=$EXE_PREFIX/bin:$PATH
   - conda create -q --yes -n test python=$PYTHON_VERSION
   - source activate test
+  - if [[ -n $STANAL ]]; then conda install -y -c http://ssb.stsci.edu/astroconda cfitsio; fi
 
 install:
   - conda install --yes $CONDA_DEPS
-  - ./waf configure --prefix=$CONDA_PREFIX
-  - ./waf build
-  - ./waf install
+  - $STANAL ./waf configure --prefix=$CONDA_PREFIX $FLAG_CFITSIO
+  - $STANAL ./waf build
+  - if [[ -z $STANAL ]]; then ./waf install; fi
 
 script:
   - $MAIN_CMD $SETUP_CMD
