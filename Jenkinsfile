@@ -18,6 +18,7 @@ for(int i = 0; i < args.size(); i++)
         }
 
         def prefix = pwd() + '/_install'
+        def runtime = "PATH=${prefix}/bin:${env.PATH}"
 
         stage("System (${name})") {
             sh 'uname -a'
@@ -38,7 +39,9 @@ for(int i = 0; i < args.size(); i++)
             stage("Test (${name})") {
                 sh 'conda install -q -y pytest astropy'
                 sh 'pip install pytest-astropy'
-                sh 'pytest -s --basetemp=tests_output --junitxml results.xml --remote-data tests'
+                withEnv(runtime) {
+                    sh 'pytest -s --basetemp=tests_output --junitxml results.xml --remote-data tests'
+                }
             }
         }
         finally {
