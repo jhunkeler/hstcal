@@ -18,7 +18,7 @@ for(int i = 0; i < args.size(); i++)
         }
 
         def prefix = pwd() + '/_install'
-        def runtime = "PATH=${prefix}/bin:${env.PATH}"
+        def runtime = ["PATH=${prefix}/bin:${env.PATH}"]
 
         stage("System (${name})") {
             sh 'uname -a'
