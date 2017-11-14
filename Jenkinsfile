@@ -1,12 +1,9 @@
-// trigger 10
-
 def args = [
     ['debug', '--debug'],
     ['release', '--release-with-symbols'],
     ['optimized', '--O3']
 ]
 def defaults = 'CFLAGS="-m64" LDFLAGS="-m64"'
-def image = 'jhunkeler/buildsys'
 def name = ''
 def option = ''
 
@@ -16,46 +13,43 @@ for(int i = 0; i < args.size(); i++)
     option = args[i][1]
 
     node {
-        //docker.image(image).inside {
-            stage("Checkout") {
-                checkout scm
-            }
-            def prefix = pwd() + '/_install'
+        stage("Checkout") {
+            checkout scm
+        }
 
-            stage("System (${name})") {
-                sh 'uname -a'
-                sh 'lscpu'
-                sh 'free -m'
-                sh 'df -hT'
-            }
-            stage("Configure (${name})") {
-                sh "yes '' | ./waf configure --prefix=${prefix} ${defaults} ${option}"
-            }
-            stage("Build (${name})") {
-                sh './waf build'
-            }
-            stage("Install (${name})") {
-                sh './waf install'
-            }
+        def prefix = pwd() + '/_install'
+
+        stage("System (${name})") {
+            sh 'uname -a'
+            sh 'lscpu'
+            sh 'free -m'
+            sh 'df -hT'
+        }
+        stage("Configure (${name})") {
+            sh "yes '' | ./waf configure --prefix=${prefix} ${defaults} ${option}"
+        }
+        stage("Build (${name})") {
+            sh './waf build'
+        }
+        stage("Install (${name})") {
+            sh './waf install'
+        }
+        try {
             stage("Test (${name})") {
-                sh "test -x ${prefix}/bin/calacs.e"
-                stash name: "bin_${name}", includes: "_install/bin/*"
+                sh 'conda install -q -y pytest astropy'
+                sh 'pip install pytest-astropy'
+                sh 'pytest -s --basetemp=tests_output --junitxml results.xml --remote-data tests'
             }
-        //}
+        }
+        finally {
+            stage("Ingest (${name}") {
+                junit '*.xml'
+                step([$class: 'XUnitBuilder',
+                    thresholds: [
+                    [$class: 'SkippedThreshold', failureThreshold: '0'],
+                    [$class: 'FailedThreshold', failureThreshold: '2']],
+                    tools: [[$class: 'JUnitType', pattern: '*.xml']]])
+            }
+        }
     }
-    //node {
-    //    stage("Analyze (${name})") {
-    //        dir("bin_${name}") {
-    //            def info = sh(script: 'uname -s', returnStdout: true).trim()
-    //            println("info='${info}'")
-    //            unstash "bin_${name}"
-    //            if (info == 'Linux') {
-    //                sh 'find . -type f | xargs ldd'
-    //            }
-    //            else if (name == 'Darwin') {
-    //                sh 'find . -type f | xargs otool -L'
-    //            }
-    //        }
-    //    }
-    //}
 }
