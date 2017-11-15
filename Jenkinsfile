@@ -1,6 +1,6 @@
 def nodes = ['linux']
-def release_modes = ['debug', 'release', 'optimized']
-def release_args = ['--debug', '--release-with-symbols', '--O3']
+def release_modes = ['debug', 'optimized', 'release']
+def release_args = ['--debug', '--O3', '--release-with-symbols']
 
 def CFLAGS = "CFLAGS=\"-m64\""
 def LDFLAGS = "LDFLAGS=\"-m64\""
@@ -15,6 +15,11 @@ for(int i = 0; i < nodes.size(); i++)
     {
         def name = release_modes[j]
         def option = release_args[j]
+
+        // Run slow tests when in release mode
+        if (name == 'release') {
+            option += ' --slow'
+        }
 
         tasks["${node_is}/${name}"] = {
             node {
