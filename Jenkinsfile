@@ -1,55 +1,58 @@
-def args = [
-    ['debug', '--debug'],
-    ['release', '--release-with-symbols'],
-    ['optimized', '--O3']
-]
-def defaults = 'CFLAGS="-m64" LDFLAGS="-m64"'
-def name = ''
-def option = ''
+def nodes = ['linux']
+def release_modes = ['debug', 'release', 'optimized']
+def release_args = ['--debug', '--release-with-symbols', '--O3']
 
-for(int i = 0; i < args.size(); i++)
+def CFLAGS = "CFLAGS=\"-m64\""
+def LDFLAGS = "LDFLAGS=\"-m64\""
+def DEFAULT_FLAGS = "${CFLAGS} ${LDFLAGS}"
+def tasks = [:]
+
+for(int i = 0; i < nodes.size(); i++)
 {
-    name = args[i][0]
-    option = args[i][1]
+    def node_is = nodes[i]
 
-    node {
-        stage("Checkout") {
-            checkout scm
-        }
+    for(int j = 0; j < release_modes.size(); j++)
+    {
+        def name = release_modes[j]
+        def option = release_args[j]
 
-        def prefix = pwd() + '/_install'
-        def runtime = ["PATH=${prefix}/bin:${env.PATH}"]
+        tasks["${node_is}/${name}"] = {
+            node {
+                stage("Checkout") {
+                    checkout scm
+                }
 
-        stage("System (${name})") {
-            sh 'uname -a'
-            sh 'lscpu'
-            sh 'free -m'
-            sh 'df -hT'
-        }
-        stage("Configure (${name})") {
-            sh "yes '' | ./waf configure --prefix=${prefix} ${defaults} ${option}"
-        }
-        stage("Build (${name})") {
-            sh './waf build'
-        }
-        stage("Install (${name})") {
-            sh './waf install'
-        }
-        try {
-            stage("Test (${name})") {
-                sh 'conda install -q -y pytest astropy'
-                withEnv(runtime) {
-                    sh 'pytest -s --basetemp=tests_output --junitxml results.xml --remote-data tests'
+                def prefix = pwd() + '/_install'
+                def runtime = ["PATH=${prefix}/bin:${env.PATH}"]
+
+                stage("Generate (${name})") {
+                    sh "yes '' | ./waf configure --prefix=${prefix} ${option} ${DEFAULT_FLAGS}"
+                    sh './waf build'
+                    sh './waf install'
+                }
+                try {
+                    stage("Test (${name})") {
+                        sh 'conda install -q -y pytest astropy'
+                        withEnv(runtime) {
+                            sh 'pytest -s --basetemp=tests_output --junitxml results.xml --remote-data tests'
+                        }
+                    }
+                }
+                catch (e) {
+                    step([$class: 'XUnitBuilder',
+                        thresholds: [
+                        [$class: 'SkippedThreshold', failureThreshold: '0'],
+                        [$class: 'FailedThreshold', unstableThreshold: '1'],
+                        [$class: 'FailedThreshold', failureThreshold: '6']],
+                        tools: [[$class: 'JUnitType', pattern: '*.xml']]])
                 }
             }
         }
-        finally {
-            step([$class: 'XUnitBuilder',
-                thresholds: [
-                [$class: 'SkippedThreshold', failureThreshold: '0'],
-                [$class: 'FailedThreshold', unstableThreshold: '1'],
-                [$class: 'FailedThreshold', failureThreshold: '6']],
-                tools: [[$class: 'JUnitType', pattern: '*.xml']]])
-        }
     }
 }
+
+stage("Matrix") {
+    parallel tasks
+}
+
+
