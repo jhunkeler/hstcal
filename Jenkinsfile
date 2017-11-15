@@ -41,7 +41,7 @@ for(int i = 0; i < nodes.size(); i++)
                         sh 'conda install -q -y pytest astropy'
                         sh 'pip install pytest-remotedata'
                         withEnv(runtime) {
-                            sh "pytest ${test_args} tests"
+                            sh "pytest tests ${test_args}"
                         }
                     }
                 }
