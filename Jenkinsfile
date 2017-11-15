@@ -44,14 +44,12 @@ for(int i = 0; i < args.size(); i++)
             }
         }
         finally {
-            stage("Ingest (${name}") {
-                junit '*.xml'
-                step([$class: 'XUnitBuilder',
-                    thresholds: [
-                    [$class: 'SkippedThreshold', failureThreshold: '0'],
-                    [$class: 'FailedThreshold', failureThreshold: '2']],
-                    tools: [[$class: 'JUnitType', pattern: '*.xml']]])
-            }
+            step([$class: 'XUnitBuilder',
+                thresholds: [
+                [$class: 'SkippedThreshold', failureThreshold: '0'],
+                [$class: 'FailedThreshold', unstableThreshold: '1'],
+                [$class: 'FailedThreshold', failureThreshold: '6']],
+                tools: [[$class: 'JUnitType', pattern: '*.xml']]])
         }
     }
 }
