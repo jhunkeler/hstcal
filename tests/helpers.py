@@ -127,18 +127,12 @@ def download_file_cgi(tree, project, filename, filemode='wb', timeout=30,
     # NOTE: This could be explicitly controlled using pytest fixture
     #       but too many ways to do the same thing would be confusing.
     #       Refine this logic if using pytest fixture.
-    cs_file = os.path.join('/eng/ssb2/tests', tree, project, filename)
+    remote_file = os.path.join(tree, project, filename)
 
-    if os.path.isfile(cs_file):
-        if allow_remote_ref:
-            return cs_file
-        shutil.copyfile(cs_file, filename)
-    else:
-        url = ('http://ssb.stsci.edu/cgi-bin/remote_testing.cgi?'
-               'tree={}&project={}&name={}'.format(tree, project, filename))
-        if allow_remote_ref:
-            return url
-        _download_file(url, filename, filemode=filemode, timeout=timeout)
+    url = ('https://bytesalad.stsci.edu/artifactory/{}'.format(remote_file))
+    if allow_remote_ref:
+        return url
+    _download_file(url, filename, filemode=filemode, timeout=timeout)
 
 
 def _get_reffile(hdr, key):
@@ -244,7 +238,7 @@ class BaseCal(object):
     prevdir = os.getcwd()
     use_ftp_crds = False
     timeout = 30  # seconds
-    tree = 'rt'  # Use dev for now
+    tree = 'rt-hstcal-dev'  # Use dev for now
 
     # Numpy default for allclose comparison
     rtol = 1e-7
