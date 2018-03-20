@@ -13,12 +13,10 @@ class TestIR01(BaseWFC3IR):
     def test_ir_01(self):
         rootname = 'iabg31030'
         asn_file = rootname + '_asn.fits'
-        asn0_file = rootname + '_asn_orig.fits'
 
         # Prepare input files.
-        download_file_cgi(self.tree, self.input_loc, asn0_file,
+        download_file_cgi(self.tree, self.input_loc, asn_file,
                           timeout=self.timeout)
-        os.rename(asn0_file, asn_file)
         for raw_file in raw_from_asn(asn_file):
             self.get_input_file(raw_file)
 
