@@ -19,6 +19,18 @@ __all__ = ['slow', 'use_calacs', 'use_calwf3', 'use_calstis', 'download_crds',
 
 HAS_CALXXX = {}   # Set by set_exe_marker()
 
+proxies = {
+    'http': '',
+    'https': '',
+}
+
+if 'HTTP_PROXY' in os.environ:
+    proxies['http'] = os.environ['HTTP_PROXY']
+
+if 'HTTPS_PROXY' in os.environ:
+    proxies['https'] = os.environ['HTTPS_PROXY']
+
+print(proxies)
 
 def set_exe_marker(instrument):
     """Set pytest marker for given instrument calibration executable."""
@@ -34,7 +46,7 @@ def set_exe_marker(instrument):
     else:  # pragma: no cover
         raise ValueError('{} is not supported'.format(instrument))
 
-    cal = find_executable(calxxx)
+    cal = find_executable(calxxx) or ''
 
     # This is for installation check.
     if os.path.isfile(cal):
@@ -62,11 +74,12 @@ use_calstis = pytest.mark.skipif(not HAS_CALXXX['stis'], reason='no CALSTIS')
 def _download_file(url, filename, filemode='wb', timeout=None):
     """Generic remote data download."""
     if url.startswith('http'):
-        r = requests.get(url, timeout=timeout)
+        print("downloading {}".format(url))
+        r = requests.get(url, timeout=timeout, proxies=proxies)
         with open(filename, filemode) as fout:
             fout.write(r.content)
     elif url.startswith('ftp'):  # TODO: Support filemode and timeout.
-        urllib.request.urlretrieve(url, filename=filename)
+        urllib.request.urlretrieve(url, filename=filename, proxies=proxies)
     else:  # pragma: no cover
         raise ValueError('Unsupported protocol for {}'.format(url))
 
@@ -129,7 +142,7 @@ def download_file_cgi(tree, project, filename, filemode='wb', timeout=30,
     #       Refine this logic if using pytest fixture.
     remote_file = os.path.join(tree, project, filename)
 
-    url = ('https://bytesalad.stsci.edu/artifactory/{}'.format(remote_file))
+    url = os.path.join('https://bytesalad.stsci.edu/artifactory', remote_file)
     if allow_remote_ref:
         return url
     _download_file(url, filename, filemode=filemode, timeout=timeout)
