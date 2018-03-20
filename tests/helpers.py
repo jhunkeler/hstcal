@@ -2,6 +2,7 @@
 from __future__ import absolute_import, division, print_function
 from astropy.extern.six.moves import urllib
 
+import json
 import os
 import shutil
 from distutils.spawn import find_executable
@@ -29,8 +30,6 @@ if 'HTTP_PROXY' in os.environ:
 
 if 'HTTPS_PROXY' in os.environ:
     proxies['https'] = os.environ['HTTPS_PROXY']
-
-print(proxies)
 
 def set_exe_marker(instrument):
     """Set pytest marker for given instrument calibration executable."""
@@ -71,6 +70,38 @@ set_exe_marker('stis')
 use_calstis = pytest.mark.skipif(not HAS_CALXXX['stis'], reason='no CALSTIS')
 
 
+class RemoteDataError(Exception):
+    def __init__(self, blob):
+        try:
+            self.errors = blob['errors'][0]
+        except (KeyError, IndexError):
+            raise TypeError('{} did not receive a JSON blob containing an '
+                            '"errors" key.'.format(self.__class__.__name__))
+
+        self.status = self.errors['status']
+        self.message = self.errors['message']
+        Exception.__init__(self, '{}: {}'.format(self.status, self.message))
+
+
+def _verify_file(filename):
+    data = None
+    with open(filename, 'rb') as fp:
+        data = fp.read(4096)
+
+        if data is None:
+            raise OSError("{}: contains no data".format(filename))
+        # If the server returned a JSON blob
+        elif data.startswith(b'{') and data.endswith(b'}'):
+            error = json.loads(data)
+
+            # If the file was JSON...
+            # TODO: Make it smart
+            if 'errors' not in error:
+                return True
+
+            raise RemoteDataError(error)
+
+
 def _download_file(url, filename, filemode='wb', timeout=None):
     """Generic remote data download."""
     if url.startswith('http'):
@@ -79,10 +110,11 @@ def _download_file(url, filename, filemode='wb', timeout=None):
         with open(filename, filemode) as fout:
             fout.write(r.content)
     elif url.startswith('ftp'):  # TODO: Support filemode and timeout.
-        urllib.request.urlretrieve(url, filename=filename, proxies=proxies)
+        urllib.request.urlretrieve(url, filename=filename)
     else:  # pragma: no cover
         raise ValueError('Unsupported protocol for {}'.format(url))
 
+    _verify_file(filename)
 
 def download_crds(refdir, refname, timeout=None):
     """Download a CRDS file from HTTP or FTP to current directory."""
@@ -363,8 +395,8 @@ class BaseCal(object):
 class BaseACS(BaseCal):
     refstr = 'jref'
     prevref = os.environ.get(refstr)
-    input_loc = 'hstcal/acs/calacs_e'
-    ref_loc = 'hstcal/acs/calacs_e/ref'
+    input_loc = 'acs/calacs_e'
+    ref_loc = 'acs/calacs_e/ref'
     ignore_keywords = ['filename', 'date', 'iraf-tlm', 'fitsdate',
                        'opus_ver', 'cal_ver', 'proctime', 'history']
 
@@ -378,13 +410,13 @@ class BaseWFC3(BaseCal):
 
 
 class BaseWFC3IR(BaseWFC3):
-    input_loc = 'hstcal/wf3/onorbit/ir'
-    ref_loc = 'hstcal/wf3/onorbit/ir/ref'
+    input_loc = 'wf3/onorbit/ir'
+    ref_loc = 'wf3/onorbit/ir/ref'
 
 
 class BaseWFC3UVIS(BaseWFC3):
-    input_loc = 'hstcal/wf3/onorbit/uvis'
-    ref_loc = 'hstcal/wf3/onorbit/uvis/ref'
+    input_loc = 'wf3/onorbit/uvis'
+    ref_loc = 'wf3/onorbit/uvis/ref'
 
 
 @use_calstis
@@ -392,5 +424,5 @@ class BaseSTIS(BaseCal):
     refstr = 'oref'
     prevref = os.environ.get(refstr)
     ignore_keywords = ['filename', 'date', 'cal_ver', 'history']
-    input_loc = 'hstcal/stis'
-    ref_loc = 'hstcal/stis/ref'
+    input_loc = 'stis'
+    ref_loc = 'stis/ref'
