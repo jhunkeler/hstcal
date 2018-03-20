@@ -3,7 +3,7 @@ language: c
 env:
   global:
     # Set defaults to avoid repeating in most cases
-    - MAIN_CMD="python --version"
+    - MAIN_CMD="calacs.e --version"
     - SETUP_CMD=""
     - EXE_PREFIX="/tmp/miniconda3"
     - CONDA_DEPS="gcc"
