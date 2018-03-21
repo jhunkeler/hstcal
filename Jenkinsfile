@@ -2,8 +2,8 @@
 if (utils.scm_checkout()) return
 
 // Config data to share between builds.
-CFLAGS = 'CFLAGS="-m64"'
-LDFLAGS = 'LDFLAGS="-m64"'
+CFLAGS = ''
+LDFLAGS = ''
 DEFAULT_FLAGS = "${CFLAGS} ${LDFLAGS}"
 // Some waf flags cause a prompt for input during configuration, hence the 'yes'.
 configure_cmd = "yes '' | ./waf configure --prefix=./_install ${DEFAULT_FLAGS}"
@@ -25,7 +25,7 @@ bc1.build_mode = "release"
 bc1.build_cmds[0] = "${configure_cmd} --release-with-symbols"
 bc1.test_cmds = ["conda install -q -y pytest requests astropy",
                  "pip install -q pytest-remotedata",
-                 "pytest tests --basetemp=tests_output --junitxml results.xml --remote-data"]
+                 "pytest tests --basetemp=tests_output --junitxml results.xml --remote-data -v"]
 bc1.failedUnstableThresh = 1
 bc1.failedFailureThresh = 6
 
