@@ -101,16 +101,15 @@ class TestRemoteData(object):
         CGI (HTTP) access for Travis CI or external machine.
         """
         # Get a small file that we know exists
-        filename = 'newhrc_osc.fits'
-        download_file_cgi('rt-hstcal-dev', 'hstcal/acs/calacs_e', filename)
+        filename = 'j6lq01010_asn.fits'
+        download_file_cgi('rt-hstcal-dev', 'acs/calacs_e', filename)
         assert os.path.isfile(filename)
 
         # Get the path only; do not download
-        filename = 'jbdf10ykq_flt_ref.fits'
-        filepath = download_file_cgi(
-            'rt-hstcal-dev', 'hstcal/acs/calacs_e/ref', filename, allow_remote_ref=True)
-        assert (filepath.startswith(('http', '/eng/ssb2')) and
-                filepath.endswith(filename))
+        filename = 'j6m901020_asn.fits'
+        filepath = download_file_cgi('rt-hstcal-dev', 'acs/calacs_e',
+                                     filename, allow_remote_ref=True)
+        assert (filepath.startswith('http') and filepath.endswith(filename))
         assert not os.path.exists(filename)
 
     def test_ftp_jref(self):
