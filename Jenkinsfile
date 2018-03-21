@@ -14,7 +14,8 @@ bc0 = new BuildConfig()
 bc0.nodetype = "linux-stable"
 bc0.build_mode = "debug"
 bc0.env_vars = ['PATH=./_install/bin:$PATH']
-bc0.build_cmds = ["${configure_cmd} --debug",
+bc0.build_cmds = ["conda install -q -y cfitsio",
+                  "${configure_cmd} --debug",
                   "./waf build",
                   "./waf install",
                   "calacs.e --version"]
