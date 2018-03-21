@@ -102,13 +102,13 @@ class TestRemoteData(object):
         """
         # Get a small file that we know exists
         filename = 'newhrc_osc.fits'
-        download_file_cgi('rt', 'hstcal/acs/calacs_e', filename)
+        download_file_cgi('rt-hstcal-dev', 'hstcal/acs/calacs_e', filename)
         assert os.path.isfile(filename)
 
         # Get the path only; do not download
         filename = 'jbdf10ykq_flt_ref.fits'
         filepath = download_file_cgi(
-            'rt', 'hstcal/acs/calacs_e/ref', filename, allow_remote_ref=True)
+            'rt-hstcal-dev', 'hstcal/acs/calacs_e/ref', filename, allow_remote_ref=True)
         assert (filepath.startswith(('http', '/eng/ssb2')) and
                 filepath.endswith(filename))
         assert not os.path.exists(filename)
