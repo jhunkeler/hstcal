@@ -14,7 +14,9 @@ bc0 = new BuildConfig()
 bc0.nodetype = "linux-stable"
 bc0.build_mode = "debug"
 bc0.env_vars = ['PATH=./_install/bin:$PATH']
-bc0.build_cmds = ["conda install -q -y cfitsio",
+bc0.build_cmds = ["conda config --add channels http://ssb.stsci.edu/astroconda",
+                  "conda install -q -y cfitsio pytest requests astropy",
+                  "pip install -q pytest-remotedata",
                   "${configure_cmd} --debug",
                   "./waf build",
                   "./waf install",
@@ -23,17 +25,15 @@ bc0.build_cmds = ["conda install -q -y cfitsio",
 
 bc1 = utils.copy(bc0)
 bc1.build_mode = "release"
-bc1.build_cmds[0] = "${configure_cmd} --release-with-symbols"
-bc1.test_cmds = ["conda install -q -y pytest requests astropy",
-                 "pip install -q pytest-remotedata",
-                 "pytest tests --basetemp=tests_output --junitxml results.xml --remote-data -v"]
+bc1.build_cmds[3] = "${configure_cmd} --release-with-symbols"
+bc1.test_cmds = ["pytest tests --basetemp=tests_output --junitxml results.xml --remote-data -v"]
 bc1.failedUnstableThresh = 1
 bc1.failedFailureThresh = 6
 
 
 bc2 = utils.copy(bc0)
 bc2.build_mode = "optimized"
-bc2.build_cmds[0] = "${configure_cmd} --O3"
+bc2.build_cmds[3] = "${configure_cmd} --O3"
 
 
 // Iterate over configurations that define the (distibuted) build matrix.
