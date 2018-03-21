@@ -13,10 +13,9 @@ configure_cmd = "yes '' | ./waf configure --prefix=./_install ${DEFAULT_FLAGS}"
 bc0 = new BuildConfig()
 bc0.nodetype = "linux-stable"
 bc0.build_mode = "debug"
-bc0.env_vars = ['PATH=./_install/bin:$PATH',
-                'PKG_CONFIG_PATH=/opt/conda/lib/pkgconfig:/usr/lib/pkgconfig']
+bc0.env_vars = ['PATH=./_install/bin:$PATH']
 bc0.build_cmds = ["conda config --add channels http://ssb.stsci.edu/astroconda",
-                  "conda install -q -y cfitsio pytest requests astropy",
+                  "conda install -q -y cfitsio pkg-config pytest requests astropy",
                   "pip install -q pytest-remotedata",
                   "${configure_cmd} --debug",
                   "./waf build",
