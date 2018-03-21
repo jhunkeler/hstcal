@@ -101,8 +101,8 @@ def _download_file(url, filename, filemode='wb', timeout=None):
             fout.write(r.content)
     elif url.startswith('ftp'):  # TODO: Support filemode and timeout.
         urllib.request.urlretrieve(url, filename=filename)
-    elif url.startswith('/') and '/cdbs/' in url:
-        refdir, refname= url[url.find('/cdbs/'):].split('/')
+    elif url.startswith('/') and 'cdbs/' in url:
+        refdir, refname = url[url.find('cdbs/'):].split('/')[1:]
         print(refdir, refname)
         _download_crds(refdir, refname)
     else:  # pragma: no cover
@@ -132,11 +132,11 @@ def download_file_cgi(tree, project, filename, filemode='wb', timeout=30,
 
     Parameters
     ----------
-    tree : {'rt', 'rtx', 'null'}
+    tree : {'rt-hstcal-dev', 'rt-hstcal-stable', 'null'}
         Test tree:
 
-        * rt = dev
-        * rtx = public
+        * rt-hstcal-dev = dev
+        * rt-hstcal-stable = public
         * null = neither, grab first match (e.g., for STAK)
 
     project : str
