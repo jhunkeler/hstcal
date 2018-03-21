@@ -20,16 +20,6 @@ __all__ = ['slow', 'use_calacs', 'use_calwf3', 'use_calstis', 'download_crds',
 
 HAS_CALXXX = {}   # Set by set_exe_marker()
 
-proxies = {
-    'http': '',
-    'https': '',
-}
-
-if 'HTTP_PROXY' in os.environ:
-    proxies['http'] = os.environ['HTTP_PROXY']
-
-if 'HTTPS_PROXY' in os.environ:
-    proxies['https'] = os.environ['HTTPS_PROXY']
 
 def set_exe_marker(instrument):
     """Set pytest marker for given instrument calibration executable."""
@@ -106,11 +96,15 @@ def _download_file(url, filename, filemode='wb', timeout=None):
     """Generic remote data download."""
     if url.startswith('http'):
         print("downloading {}".format(url))
-        r = requests.get(url, timeout=timeout, proxies=proxies)
+        r = requests.get(url, timeout=timeout)
         with open(filename, filemode) as fout:
             fout.write(r.content)
     elif url.startswith('ftp'):  # TODO: Support filemode and timeout.
         urllib.request.urlretrieve(url, filename=filename)
+    elif url.startswith('/') and '/cdbs/' in url:
+        refdir, refname= url[url.find('/cdbs/'):].split('/')
+        print(refdir, refname)
+        _download_crds(refdir, refname)
     else:  # pragma: no cover
         raise ValueError('Unsupported protocol for {}'.format(url))
 
@@ -374,7 +368,7 @@ class BaseCal(object):
         for actual, desired in outputs:
             # Get "truth" image
             s = download_file_cgi(self.tree, self.ref_loc, desired,
-                                  allow_remote_ref=True, timeout=self.timeout)
+                                  allow_remote_ref=False, timeout=self.timeout)
             if s is not None:
                 desired = s
 
