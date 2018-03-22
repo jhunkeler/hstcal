@@ -102,12 +102,13 @@ def _download_file(url, filename, filemode='wb', timeout=None):
     elif url.startswith('ftp'):  # TODO: Support filemode and timeout.
         urllib.request.urlretrieve(url, filename=filename)
     elif url.startswith('/') and 'cdbs/' in url:
-        refdir, refname = url[url.find('cdbs/'):].split('/')[1:]
-        print(refdir, refname)
-        download_crds(refdir, refname)
+        # Override filename with reference file name
+        refdir, filename = url[url.find('cdbs/'):].split('/')[1:]
+        download_crds(refdir, filename)
     else:  # pragma: no cover
         raise ValueError('Unsupported protocol for {}'.format(url))
 
+    # Ensure we have a file and not a JSON error block from the server
     _verify_file(filename)
 
 def download_crds(refdir, refname, timeout=None):
