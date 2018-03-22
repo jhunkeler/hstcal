@@ -104,7 +104,7 @@ def _download_file(url, filename, filemode='wb', timeout=None):
     elif url.startswith('/') and 'cdbs/' in url:
         refdir, refname = url[url.find('cdbs/'):].split('/')[1:]
         print(refdir, refname)
-        _download_crds(refdir, refname)
+        download_crds(refdir, refname)
     else:  # pragma: no cover
         raise ValueError('Unsupported protocol for {}'.format(url))
 
