@@ -30,7 +30,7 @@ jobs:
       if: matrix.os == 'macos-latest'
       run: |
         brew update
-        brew install cfitsio
+        brew install gcc cfitsio
 
     - name: Build
       run: |
