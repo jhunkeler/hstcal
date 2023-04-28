@@ -25,6 +25,12 @@ jobs:
       run: |
         sudo apt update
         sudo apt install -y libcfitsio-dev gfortran pkg-config
+    
+    - name: MacOS dependencies
+      if: matrix.os == 'macos-latest'
+      run: |
+        brew update
+        brew install cfitsio
 
     - name: Build
       run: |
