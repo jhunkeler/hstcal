@@ -16,7 +16,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
-        gcc: 12
+        gcc: [12]
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v3
