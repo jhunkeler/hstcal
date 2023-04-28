@@ -33,13 +33,7 @@ jobs:
         brew update
         brew install gcc@${{ matrix.gcc }} cfitsio
 
-    - name: Build
-      env:
-      if: os.matrix == 'macos.latest'
-        CC: gcc-${{ matrix.gcc }}
-        CXX: g++-${{ matrix.gcc }}
-        FC: gfortran-${{ matrix.gcc }}
-      
+    - name: Linux build
       run: |
         mkdir -p build
         cd build
@@ -47,6 +41,22 @@ jobs:
           -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
           -DCMAKE_INSTALL_PREFIX=${{ env.INSTALL_PREFIX }}
         make
+
+    - name: MacOS build
+      if: os.matrix == 'macos-latest'
+      env:
+        CC: gcc-${{ matrix.gcc }}
+        CXX: g++-${{ matrix.gcc }}
+        FC: gfortran-${{ matrix.gcc }}
+
+      run: |
+        mkdir -p build
+        cd build
+        cmake .. \
+          -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
+          -DCMAKE_INSTALL_PREFIX=${{ env.INSTALL_PREFIX }}
+        make
+
 
     - name: Install
       run: |
