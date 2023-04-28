@@ -43,7 +43,7 @@ jobs:
         make
 
     - name: MacOS build
-      if: os.matrix == 'macos-latest'
+      if: matrix.os == 'macos-latest'
       env:
         CC: gcc-${{ matrix.gcc }}
         CXX: g++-${{ matrix.gcc }}
