@@ -7,7 +7,7 @@
 
 extern int status;			/* zero is OK */
 
-# include <c_iraf.h>		/* for c_irafinit */
+# include "c_iraf.h"		/* for c_irafinit */
 #include "hstcal_memory.h"
 #include "hstcal.h"
 # include "ximio.h"

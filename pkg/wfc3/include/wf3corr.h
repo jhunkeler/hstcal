@@ -48,5 +48,24 @@ typedef struct {
 
 } IR_Switch;
 
+/* All the calibration switches. */
+
+typedef struct {
+    int atodcorr;
+    int biascorr;
+    int blevcorr;
+    int crcorr;
+    int darkcorr;
+    int flashcorr;
+    int dqicorr;
+    int flatcorr;
+    int pctecorr;
+    int glincorr;
+    int lflgcorr;
+    int photcorr;
+    int rptcorr;
+    int shadcorr;
+    int expscorr;
+} CalSwitch;
 
 #endif /* INCL_WF3CORR_H */

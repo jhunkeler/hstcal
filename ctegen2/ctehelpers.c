@@ -4,7 +4,12 @@
 #include <assert.h>
 #include "hstcal_memory.h"
 #include "hstcal.h"
-#include "wf3.h" //need to remove this dependency
+//#include "wf3.h" //need to remove this dependency
+#include "acs.h"
+#include "hstcalerr.h"
+#include "fitsio.h"
+#include "xtables.h"
+#include "ctables.h"
 #include "ctegen2.h"
 
 void initCTEParamsFast(CTEParamsFast * pars, const unsigned _nTraps,

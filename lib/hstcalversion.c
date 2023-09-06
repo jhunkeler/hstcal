@@ -13,10 +13,13 @@ char * sprintfGitInfo(char ** buffer)
         assert(0); // Incorrect usage - NULL ptr must be passed in.
 
     const char * format = "git tag: %s\ngit branch: %s\nHEAD @: %s";
-    size_t length = strlen(format) + strlen(VERSION) + strlen(BRANCH) + strlen(COMMIT); // NOTE: this doesn't require an explicit +1 for '\0' as it is larger than needed due to '%s' & '\n'.
-    *buffer = malloc(length*sizeof(char));
+    //size_t length = strlen(format) + strlen(VERSION) + strlen(BRANCH) + strlen(COMMIT); // NOTE: this doesn't require an explicit +1 for '\0' as it is larger than needed due to '%s' & '\n'.
+    //*buffer = malloc(length*sizeof(char));
+    *buffer = calloc(255, sizeof(char));
     if (!*buffer)
         return NULL;
+    const char *BRANCH = "branch_here";
+    const char *COMMIT = "abc123";
     sprintf(*buffer, format, VERSION, BRANCH, COMMIT);
     return *buffer;
 }

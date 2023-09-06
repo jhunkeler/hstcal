@@ -7,7 +7,7 @@
 #include "hstcal_memory.h"
 # include "c_iraf.h"		/* for c_irafinit */
 
-# include "../stis.h"
+# include "stis.h"
 # include "calstis8.h"
 # include "hstcalerr.h"
 # include "hstcalversion.h"

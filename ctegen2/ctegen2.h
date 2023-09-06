@@ -3,6 +3,8 @@
 
 #include "hstio.h"
 
+#define SZ_CBUF 24
+
 typedef struct {
     unsigned maxThreads;
     Bool verbose;
