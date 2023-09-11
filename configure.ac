@@ -1,21 +1,23 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
+CFLAGS="$CFLAGS -Wall -Wextra"
+LDFLAGS="$LDFLAGS -Wl,--as-needed"
 
 AC_PREREQ([2.71])
-AC_SUBST(V,[m4_esyscmd([.ci/bin/git-version-gen .tarball-version])]
 AC_INIT([hstcal],
         [m4_esyscmd([.ci/bin/git-version-gen .tarball-version])],
         [https://github.com/spactelescope/hstcal/issues],
         [],
-        https://github.com/spactelescope/hstcal)
+        [https://github.com/spactelescope/hstcal])
 AC_SUBST(program_suffix, ".e")
-AM_INIT_AUTOMAKE([-Wall foreign subdir-objects])
-AM_PROG_AR
-LT_INIT
-
 AC_CONFIG_MACRO_DIRS([m4])
 AC_CONFIG_SRCDIR([lib/hstcalversion.c])
 AC_CONFIG_HEADERS([config.h])
+AC_USE_SYSTEM_EXTENSIONS
+
+AM_INIT_AUTOMAKE([-Wall foreign subdir-objects])
+AM_PROG_AR
+LT_INIT
 
 # Checks for programs.
 AC_PROG_CC
@@ -24,24 +26,6 @@ AC_PROG_MAKE_SET
 AC_OPENMP
 PKG_PROG_PKG_CONFIG
 
-CFLAGS="$CFLAGS -std=gnu99 -Wall -Wextra"
-
-AC_ARG_ENABLE(release,
-    AS_HELP_STRING([--enable-release],[Enable optimization]),
-    enable_release=$enableval, enable_release=no)
-
-if test "$enable_release" = "yes" ; then
-    CFLAGS="$CFLAGS -O2"
-fi
-
-AC_ARG_ENABLE(release-with-symbols,
-    AS_HELP_STRING([--enable-release-with-symbols],[Enable symbols and optimization]),
-    enable_release_with_symbols=$enableval, enable_release_with_symbols=no)
-
-if test "$enable_release_with_symbols" = "yes" ; then
-    CFLAGS="$CFLAGS -g -O2"
-fi
-
 AC_ARG_ENABLE(debug,
     AS_HELP_STRING([--enable-debug],[Enable symbols and disable optimization]),
     enable_debug=$enableval, enable_debug=no)
@@ -49,9 +33,6 @@ AC_ARG_ENABLE(debug,
 if test "$enable_debug" = "yes" ; then
     CFLAGS="$CFLAGS -g -O0 -DDEBUG"
 fi
-
-
-# Checks for libraries.
 
 # Checks for libraries.
 AC_ARG_WITH([cfitsio],

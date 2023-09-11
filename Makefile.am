@@ -1,6 +1,9 @@
 SUBDIRS = lib hstio cvos tables ctegen2 pkg
 ACLOCAL_AMFLAGS = -I m4
 EXTRA_DIST = \
+	$(top_srcdir)/INSTALL.md \
+	$(top_srcdir)/README.md \
+	$(top_srcdir)/LICENSE.txt \
 	$(top_srcdir)/include \
 	$(top_srcdir)/hstio \
 	$(top_srcdir)/cvos \

@@ -2,7 +2,7 @@
 
 failed=0
 
-aclocal || exit 1
-automake -a -c || exit 1
-autoconf -i -f || exit 1
-echo bootstrap successful
+aclocal
+autoheader
+autoreconf -i -f -v
+automake -a -c

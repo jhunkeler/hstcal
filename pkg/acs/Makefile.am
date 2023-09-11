@@ -29,10 +29,11 @@ LDADD = \
 	$(top_builddir)/ctegen2/libhstctegen2.la \
 	$(builddir)/lib/libhstacs.la
 AM_CFLAGS = \
+	$(CFLAGS) \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/tables \
 	-I$(srcdir)/include \
 	-I$(incdir) \
 	$(OPENMP_CFLAGS)
-AM_CPPFLAGS = $(OPENMP_CPPFLAGS)
-AM_LDFLAGS = $(OPENMP_LDFLAGS)
+AM_CPPFLAGS = $(CPPFLAGS) $(OPENMP_CPPFLAGS)
+AM_LDFLAGS = $(LDFLAGS) $(OPENMP_LDFLAGS) -lm

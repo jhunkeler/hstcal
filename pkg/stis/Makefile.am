@@ -30,6 +30,8 @@ LDADD = \
 	$(builddir)/lib/libhststis.la
 
 AM_CFLAGS = \
+	$(CFLAGS) \
 	-I$(builddir)/include \
 	-I$(srcdir)/include \
 	-I$(top_srcdir)/include
+AM_LDFLAGS = $(LDFLAGS) -lm

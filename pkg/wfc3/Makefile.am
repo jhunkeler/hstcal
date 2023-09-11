@@ -27,8 +27,9 @@ LDADD = \
 	$(builddir)/lib/libhstwfc3.la
 
 AM_CFLAGS = \
+	$(CFLAGS) \
 	-I$(top_srcdir)/include \
 	-I$(srcdir)/include \
 	$(OPENMP_CFLAGS)
-AM_CPPFLAGS = $(OPENMP_CPPFLAGS)
-AM_LDFLAGS = $(OPENMP_LDFLAGS)
+AM_CPPFLAGS = $(CPPFLAGS) $(OPENMP_CPPFLAGS)
+AM_LDFLAGS = $(LDFLAGS) $(OPENMP_LDFLAGS) -lm
