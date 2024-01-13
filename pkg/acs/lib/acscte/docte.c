@@ -21,7 +21,7 @@
 # include "hstcalerr.h"
 #include "trlbuf.h"
 
-# include "../../../../ctegen2/ctegen2.h"
+# include "ctegen2.h"
 # include "pcte.h"
 
 static void PCTEMsg (ACSInfo *, int);

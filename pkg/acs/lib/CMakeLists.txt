@@ -132,6 +132,7 @@ target_include_directories(${PROJECT_NAME}
 	PUBLIC ${HSTCAL_include}
 	PUBLIC ${PROJECT_NAME_INCLUDE_DIR}
 	PUBLIC ${PROJECT_SOURCE_DIR}/../include
+	PUBLIC ${CMAKE_SOURCE_DIR}/lib/ctegen2
 )
 target_link_libraries(${PROJECT_NAME}
 	PUBLIC ctegen2

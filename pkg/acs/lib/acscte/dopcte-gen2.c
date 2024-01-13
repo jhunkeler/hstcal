@@ -18,7 +18,7 @@
 # ifdef _OPENMP
 #  include <omp.h>
 # endif
-# include "../../../../ctegen2/ctegen2.h"
+# include "ctegen2.h"
 #include <assert.h>
 
 int get_amp_array_size_acs_cte(const ACSInfo *acs, SingleGroup *amp,

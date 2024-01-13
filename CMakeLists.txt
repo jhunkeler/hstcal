@@ -9,9 +9,15 @@ set(WITH_CFITSIO_LDFLAGS "-lcfitsio" CACHE STRING "CFITSIO linker flags")
 
 # Use git to set package version
 # Caveat: unix-only
-execute_process(
-	COMMAND ${CMAKE_SOURCE_DIR}/.ci/bin/git_version "${CMAKE_SOURCE_DIR}"
-	OUTPUT_VARIABLE version
+#execute_process(
+#	COMMAND ${CMAKE_SOURCE_DIR}/.ci/bin/git_version "${CMAKE_SOURCE_DIR}"
+#	OUTPUT_VARIABLE version
+#)
+add_custom_target(distinfo
+	COMMAND ${CMAKE_COMMAND} -E time ${CMAKE_SOURCE_DIR}/.ci/bin/git_version "${CMAKE_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}"
+	BYPRODUCTS
+		"${CMAKE_CURRENT_BINARY_DIR}/version.h"
+		"${CMAKE_CURRENT_BINARY_DIR}/DISTINFO"
 )
 
 # Hack to produce autotools-like distribution archives
@@ -99,10 +105,5 @@ set(CPACK_SOURCE_IGNORE_FILES
 set(CPACK_VERBATIM_VARIABLES YES)
 include(CPack)
 
-add_subdirectory(ctegen2)
-add_subdirectory(cvos)
-add_subdirectory(hstio)
 add_subdirectory(lib)
-add_subdirectory(tables)
 add_subdirectory(pkg)
-

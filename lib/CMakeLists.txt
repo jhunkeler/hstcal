@@ -1,21 +1,5 @@
-project(hstcalib C Fortran)
-add_library(${PROJECT_NAME} SHARED
-	ncarfft.f
-	getphttab.c
-	hstcal_memory.c
-	hstcalversion.c
-	str_util.c
-	trlbuf.c
-)
-target_link_libraries(${PROJECT_NAME}
-	hstio
-	tables
-	${cfitsio_LDFLAGS}
-)
-target_include_directories(${PROJECT_NAME}
-	PUBLIC ${HSTCAL_include}
-)
-install(TARGETS ${PROJECT_NAME}
-	DESTINATION lib
-)
-
+add_subdirectory(calib)
+add_subdirectory(hstio)
+add_subdirectory(tables)
+add_subdirectory(cvos)
+add_subdirectory(ctegen2)

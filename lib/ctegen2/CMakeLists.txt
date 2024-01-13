@@ -20,9 +20,9 @@ target_link_libraries(${PROJECT_NAME}
 target_include_directories(${PROJECT_NAME}
 	PUBLIC ${PROJECT_NAME_SOURCE_DIR}
 	PUBLIC ${HSTCAL_include}
-	PUBLIC ../pkg/acs/include
-	PUBLIC ../pkg/wfc3/include
-	PUBLIC ../pkg/stis/include
+	PUBLIC ${CMAKE_SOURCE_DIR}/pkg/acs/include
+	PUBLIC ${CMAKE_SOURCE_DIR}/pkg/wfc3/include
+	PUBLIC ${CMAKE_SOURCE_DIR}/pkg/stis/include
 )
 
 target_compile_options(${PROJECT_NAME}
