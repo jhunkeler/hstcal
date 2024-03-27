@@ -18,3 +18,6 @@ target_compile_options(${PROJECT_NAME} PUBLIC ${cfitsio_CFLAGS_OTHER})
 install(TARGETS ${PROJECT_NAME}
 	DESTINATION lib
 )
+
+add_subdirectory(test)
+
