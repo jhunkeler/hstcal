@@ -5,14 +5,14 @@ from astropy.io import fits
 import shutil
 
 path = os.path.dirname(__file__)
-bin_path = os.path.join(path, "../../build.%s/hstio/test/" % platform.platform())
+bin_path = path
 join = os.path.join
 
 def test_hstio_resize_hdu():
     shutil.copyfile(join(path, "test_hstio_resize_hdu.fits"),
                     join(path, "test_hstio_resize_hdu_tmp.fits"))
 
-    assert os.system("%s %s" % (join(bin_path, "test_hstio_resize_hdu"),
+    assert os.system("%s %s" % (join(bin_path, "test_hstio_resize_hdu.e"),
                                 join(path, "test_hstio_resize_hdu_tmp.fits"))) == 0
 
     with fits.open(join(path, "test_hstio_resize_hdu_tmp.fits")) as hdulist:
@@ -24,7 +24,7 @@ def test_hstio_resize_hdu2():
     shutil.copyfile(join(path, "test_hstio_resize_hdu.fits"),
                     join(path, "test_hstio_resize_hdu_tmp.fits"))
 
-    assert os.system("%s %s" % (join(bin_path, "test_hstio_resize_hdu2"),
+    assert os.system("%s %s" % (join(bin_path, "test_hstio_resize_hdu2.e"),
                                 join(path, "test_hstio_resize_hdu_tmp.fits"))) == 0
 
     with fits.open(join(path, "test_hstio_resize_hdu_tmp.fits")) as hdulist:
