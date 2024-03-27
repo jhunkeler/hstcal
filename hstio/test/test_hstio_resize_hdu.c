@@ -9,10 +9,14 @@ main(int argc, char **argv) {
     Hdr hdr;
     int x, y;
 
+    if (argc < 2) {
+        fprintf(stderr, "a file name is required\n");
+        exit(1);
+    }
     initShortData(&da);
     initHdr(&hdr);
 
-    iodesc = openUpdateImage(argv[argc-1], "TST", 1, &hdr);
+    iodesc = openUpdateImage(argv[1], "TST", 1, &hdr);
     getShortData(iodesc, &da);
 
     for (y = 0; y < da.ny; ++y) {
