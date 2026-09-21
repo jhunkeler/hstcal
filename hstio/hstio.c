@@ -412,7 +412,7 @@ void error(const HSTIOError e, char *str) {
             reason = "Error removing file.";
             break;
         default:
-            reason = "BUG: Unhandled error_status in HSTIO error() function";
+            reason = "BUG: Unhandled HSTIOError value.";
             break;
     }
 
