@@ -425,7 +425,7 @@ void error(const HSTIOError e, char *str) {
 
     // Check for truncation
     size_t reason_offset = error_msg_len;
-    if (reason_offset > (int) sizeof(error_msg) - 1) {
+    if (reason_offset > sizeof(error_msg) - 1) {
         // not enough room to fit str and reason
         reason_offset = strlen(error_msg) ? strlen(error_msg) - strlen(reason) - 1 : 0;
     }
