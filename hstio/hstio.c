@@ -416,7 +416,24 @@ void error(const HSTIOError e, char *str) {
             break;
     }
 
-    snprintf(error_msg, sizeof(error_msg), "%s%s%s", str ? str : "", str ? "\n" : "", reason);
+    // Store message
+    const int error_msg_len = snprintf(error_msg, sizeof(error_msg), "%s", str ? str : "");
+    if (error_msg_len < 0) {
+        fprintf(stderr, "%s: error_msg format encoding failed!", __func__);
+        return;
+    }
+
+    // Check for truncation
+    size_t reason_offset = error_msg_len;
+    if (reason_offset > (int) sizeof(error_msg) - 1) {
+        // not enough room to fit str and reason
+        reason_offset = strlen(error_msg) ? strlen(error_msg) - strlen(reason) - 1 : 0;
+    }
+
+    // Append reason to error_msg at the calculated offset
+    snprintf(&error_msg[reason_offset],
+        sizeof(error_msg) - reason_offset,
+        "%s%s", str && strlen(str) ? "\n" : "", reason);
 
     if (errtop > -1 && errhandler[errtop] != 0) {
         errhandler[errtop]();
@@ -432,10 +449,11 @@ static void ioerr(HSTIOError e, IODescPtr x_, int status) {
                 "Filename %s EXTNAME %s EXTVER %d CFITSIO status %d\n",
                 x->filename, x->extname, x->extver, status);
         while (fits_read_errmsg(cfitsio_errmsg)) {
-            strncat(error_msg, cfitsio_errmsg, sizeof(error_msg) - strlen(error_msg) - 1);
+                strncat(error_msg, cfitsio_errmsg, sizeof(error_msg) - strlen(error_msg) - 1);
         }
-        error(e,0);
+        error(e, 0);
 }
+
 
 /*
 ** Section 3.
