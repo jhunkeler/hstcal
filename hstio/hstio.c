@@ -367,7 +367,7 @@ void error(const HSTIOError e, char *str) {
             reason = "Image has wrong data type.";
             break;
         case NOSCI:
-            reason = "No Sci array corresponding to DQ or Err arrays";
+            reason = "No SCI array corresponding to DQ or ERR arrays.";
             break;
         case BADSCIDIMS:
             reason = "Sci array has wrong number of dimensions.";
