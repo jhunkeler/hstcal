@@ -370,7 +370,7 @@ void error(const HSTIOError e, char *str) {
             reason = "No SCI array corresponding to DQ or ERR arrays.";
             break;
         case BADSCIDIMS:
-            reason = "Sci array has wrong number of dimensions.";
+            reason = "SCI array has wrong number of dimensions.";
             break;
         case BADGROUP:
             reason = "Group number is out of range.";
