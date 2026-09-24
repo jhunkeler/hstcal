@@ -21,3 +21,13 @@ target_link_libraries(test_acscte_rotateamp
     PUBLIC acs
     PUBLIC hstcalib
 )
+
+add_executable(test_hstio
+    test_hstio.c
+)
+add_test(NAME test_hstio
+    COMMAND $<TARGET_FILE:test_hstio>
+)
+target_link_libraries(test_hstio
+    PUBLIC hstio
+)
