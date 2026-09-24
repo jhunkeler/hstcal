@@ -56,7 +56,7 @@
     setvbuf(stderr, NULL, _IONBF, 0); \
 } while (0)
 
-#define TEST_SUITE_BEGIN \
+#define TEST_SUITE_BEGIN() \
     int main(int argc, char *argv[]) { \
         (void) argc; \
         (void) argv; \
@@ -67,6 +67,15 @@
         return 1; \
     } \
     return 0; }
+
+#define TEST_SUITE_RUN(TESTFUNC_ARRAY) \
+    TEST_DISABLE_BUFFERING(); \
+    const size_t TEST_LOCAL_TESTFUNC_COUNT = sizeof((TESTFUNC_ARRAY))/sizeof((TESTFUNC_ARRAY)[0]); \
+    for (size_t i = 0; i < TEST_LOCAL_TESTFUNC_COUNT; i++) { \
+        const testfunc TEST_LOCAL_TESTFUNC = (TESTFUNC_ARRAY)[i]; \
+        const int TEST_LOCAL_RESULT = TEST_LOCAL_TESTFUNC(); \
+        TEST_STATS_UPDATE(TEST_LOCAL_RESULT); \
+    }
 
 /* Generate a function signature suffixed with FN_NAME and configure local variables
  * required by other unit test functions
@@ -80,37 +89,14 @@
  *     TEST_ASSERT(stuff == 4321, "%s", "nothing to format here");
  * } TEST_END
  *
- * // Exanded view
- * int test_mytest() {
-       int TEST_LOCAL_ERROR_COUNT = 0; \
-       struct TestRedirect TEST_LOCAL_REDIRECT = {0}; \
-       printf(TEST_TERM_COLOR_BRIGHT_BLUE "  UNIT" TEST_TERM_COLOR_RESET TEST_TERM_COLOR_BRIGHT_WHITE " %s..." TEST_TERM_COLOR_RESET, __func__); \
-       TEST_REDIRECT_OUTPUT(&TEST_LOCAL_REDIRECT);
- *     {
- *          // code
- *          TEST_ASSERT(value == 1234, "expected %d, got %d", value);
- *          TEST_ASSERT(stuff == 4321, "%s", "nothing to format here");
- *     }
- *     TEST_REDIRECT_OUTPUT_RESTORE(&TEST_LOCAL_REDIRECT); \
- *     printf(TEST_TERM_COLOR_RESET " %s\n" TEST_TERM_COLOR_RESET, TEST_LOCAL_ERROR_COUNT ? TEST_TERM_COLOR_RED "FAILED" TEST_TERM_COLOR_RESET : TEST_TERM_COLOR_GREEN "PASSED" TEST_TERM_COLOR_RESET); \
- *     TEST_REDIRECT_OUTPUT_DUMP(&TEST_LOCAL_REDIRECT); \
- *     return (TEST_LOCAL_ERROR_COUNT) ? TEST_T_FAIL : TEST_T_PASS; }
- * }
  *
- * int main(int argc, char *argv[]) {
+ * TEST_SUITE_BEGIN() {
  *     testfunc tests[] = {
  *         test_mytest,
  *     };
-       int stats[4] = {0};
-
- *     for (size_t i = 0; i < sizeof(test) / sizeof(*test); i++) {
- *         testfunc test = tests[i];
- *         const int result = test();
- *         TEST_STATS_UPDATE(&stats, result);
- *     }
+ *     TEST_SUITE_RUN(tests)
  *     TEST_SHOW_SUMMARY()
- *
- * }
+ * } TEST_SUITE_END
  *
  * @param FN_NAME function name
  */
@@ -304,7 +290,11 @@ static inline int TEST_MSG(FILE *stream, const char *color, const char *prefix, 
     return len;
 }
 
-static inline void TEST_STATS_UPDATE(int *stats, const int result) {
+#define TEST_STATS_UPDATE(RES) do { \
+    TEST_STATS_UPDATE_(TEST_LOCAL_STATS, (RES)); \
+} while (0);
+
+static inline void TEST_STATS_UPDATE_(int *stats, const int result) {
     switch (result) {
         case TEST_T_FAIL:
             stats[TEST_T_FAIL]++;
@@ -324,14 +314,18 @@ static inline void TEST_STATS_UPDATE(int *stats, const int result) {
     }
 }
 
-static inline void TEST_STATS_SHOW(const int *stats, const char *name) {
+#define TEST_STATS_SHOW() do { \
+    TEST_STATS_SHOW_(TEST_LOCAL_STATS, __FILE__); \
+} while (0);
+
+static inline void TEST_STATS_SHOW_(const int *stats, const char *name) {
     size_t total_tests = 0;
     for (size_t i = 0; i < TEST_STATS_ARRAY_MAX; i++) {
         total_tests += stats[i];
     }
     printf("\n\nUNIT TEST SUMMARY\n");
     printf("\nORIGIN: %s\n", name);
-    printf("\nTests executed... %-8zu\n", total_tests);
+    printf("\n%-6s... %-8zu\n", "Tests", total_tests);
     printf("%-6s... %-8d\n", "Pass", stats[TEST_T_PASS]);
     printf("%-6s... %-8d\n", "Fail", stats[TEST_T_FAIL]);
     printf("%-6s... %-8d\n", "Error", stats[TEST_T_ERROR]);
