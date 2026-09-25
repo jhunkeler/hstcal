@@ -56,17 +56,23 @@
     setvbuf(stderr, NULL, _IONBF, 0); \
 } while (0)
 
-#define TEST_SUITE_BEGIN() \
+#define TEST_SUITE_BEGIN(NAME) \
     int main(int argc, char *argv[]) { \
         (void) argc; \
         (void) argv; \
-        int TEST_LOCAL_STATS[TEST_STATS_ARRAY_MAX] = {0};
+        const char *TEST_LOCAL_SUITE_NAME = NAME != NULL ? NAME : __FILE__; \
+        int TEST_LOCAL_STATS[TEST_STATS_ARRAY_MAX] = {0}; \
+        TEST_MSG(stdout, NULL, TEST_TERM_COLOR_BRIGHT_BLUE " SUITE", \
+            "%s%s...%s", \
+            TEST_TERM_COLOR_BRIGHT_WHITE, TEST_LOCAL_SUITE_NAME, TEST_TERM_COLOR_RESET);
 
-#define TEST_SUITE_END \
-    if (TEST_LOCAL_STATS[TEST_T_FAIL] || TEST_LOCAL_STATS[TEST_T_ERROR]) { \
-        return 1; \
-    } \
-    return 0; }
+#define TEST_SUITE_RETURN \
+        TEST_STATS_SHOW(); \
+        if (TEST_LOCAL_STATS[TEST_T_FAIL] || TEST_LOCAL_STATS[TEST_T_ERROR]) { \
+            return 1; \
+        } \
+        return 0; \
+    }
 
 #define TEST_SUITE_RUN(TESTFUNC_ARRAY) \
     TEST_DISABLE_BUFFERING(); \
@@ -112,7 +118,7 @@
 
 #define TEST_FORCE_ERROR do { \
     TEST_REDIRECT_OUTPUT_RESTORE(&TEST_LOCAL_REDIRECT); \
-    printf(TEST_TERM_COLOR_RED " ERROR\n" TEST_TERM_COLOR_RESET); \
+    printf(TEST_TERM_COLOR_BOLD TEST_TERM_COLOR_BRIGHT_RED " ERROR\n" TEST_TERM_COLOR_RESET); \
     TEST_REDIRECT_OUTPUT_DUMP(&TEST_LOCAL_REDIRECT); \
     return TEST_T_ERROR; \
 } while (0);
@@ -124,14 +130,14 @@
     return TEST_T_SKIP; \
 } while (0);
 
-#define TEST_END \
+#define TEST_RETURN \
     TEST_REDIRECT_OUTPUT_RESTORE(&TEST_LOCAL_REDIRECT); \
     printf(TEST_TERM_COLOR_RESET " %s\n" TEST_TERM_COLOR_RESET, TEST_LOCAL_ERROR_COUNT ? TEST_TERM_COLOR_RED "FAILED" TEST_TERM_COLOR_RESET : TEST_TERM_COLOR_GREEN "PASSED" TEST_TERM_COLOR_RESET); \
     TEST_REDIRECT_OUTPUT_DUMP(&TEST_LOCAL_REDIRECT); \
     return (TEST_LOCAL_ERROR_COUNT) ? TEST_T_FAIL : TEST_T_PASS; }
 
-#define TEST_DESCRIBE(DESC) do { \
-    printf(TEST_TERM_COLOR_BRIGHT_CYAN "DESCRIPTION" TEST_TERM_COLOR_RESET " %s\n" TEST_TERM_COLOR_RESET, DESC); \
+#define TEST_MARK(DESC) do { \
+    printf(TEST_TERM_COLOR_BRIGHT_CYAN "MARK" TEST_TERM_COLOR_RESET " %s\n" TEST_TERM_COLOR_RESET, DESC); \
 } while (0)
 
 #define TEST_ASSERT(COND, REASON, ...) do { \
@@ -247,7 +253,7 @@ static inline int TEST_REDIRECT_OUTPUT_DUMP(struct TestRedirect *r) {
     }
 
     char line[0x1000] = {0};
-    for (size_t i = 0; fgets(line, sizeof(line) - 1, fp) != NULL; i++) {
+    while (fgets(line, sizeof(line) - 1, fp) != NULL) {
         if (strrchr(line, '\n') == NULL) {
             const size_t logical_len = strlen_sans_ansi_codes(line);
             if (logical_len == 0) {
@@ -257,7 +263,7 @@ static inline int TEST_REDIRECT_OUTPUT_DUMP(struct TestRedirect *r) {
                 continue;
             }
         }
-        printf(TEST_TERM_COLOR_RESET "OUT[%zu] %s", i, line);
+        printf(TEST_TERM_COLOR_BRIGHT_BLUE "      " TEST_TERM_COLOR_RESET " %s", line);
     }
     if (strlen(r->filename)) {
         remove(r->filename);
@@ -315,7 +321,7 @@ static inline void TEST_STATS_UPDATE_(int *stats, const int result) {
 }
 
 #define TEST_STATS_SHOW() do { \
-    TEST_STATS_SHOW_(TEST_LOCAL_STATS, __FILE__); \
+    TEST_STATS_SHOW_(TEST_LOCAL_STATS, TEST_LOCAL_SUITE_NAME); \
 } while (0);
 
 static inline void TEST_STATS_SHOW_(const int *stats, const char *name) {
@@ -323,13 +329,14 @@ static inline void TEST_STATS_SHOW_(const int *stats, const char *name) {
     for (size_t i = 0; i < TEST_STATS_ARRAY_MAX; i++) {
         total_tests += stats[i];
     }
-    printf("\n\nUNIT TEST SUMMARY\n");
-    printf("\nORIGIN: %s\n", name);
-    printf("\n%-6s... %-8zu\n", "Tests", total_tests);
-    printf("%-6s... %-8d\n", "Pass", stats[TEST_T_PASS]);
-    printf("%-6s... %-8d\n", "Fail", stats[TEST_T_FAIL]);
-    printf("%-6s... %-8d\n", "Error", stats[TEST_T_ERROR]);
-    printf("%-6s... %-8d\n", "Skip", stats[TEST_T_SKIP]);
+    printf("\n");
+    printf("%sREPORT%s %s%s%s\n\n", TEST_TERM_COLOR_BRIGHT_BLUE, TEST_TERM_COLOR_RESET,
+        TEST_TERM_COLOR_BRIGHT_WHITE, name, TEST_TERM_COLOR_RESET);
+    printf("%s%-6s%s... %-8zu\n", TEST_TERM_COLOR_BRIGHT_WHITE, "Tests", TEST_TERM_COLOR_RESET, total_tests);
+    printf("%s%-6s%s... %-8d\n", TEST_TERM_COLOR_GREEN, "Pass", TEST_TERM_COLOR_RESET, stats[TEST_T_PASS]);
+    printf("%s%-6s%s... %-8d\n", TEST_TERM_COLOR_RED, "Fail", TEST_TERM_COLOR_RESET, stats[TEST_T_FAIL]);
+    printf("%s%-6s%s... %-8d\n", TEST_TERM_COLOR_BOLD TEST_TERM_COLOR_BRIGHT_RED, "Error", TEST_TERM_COLOR_RESET, stats[TEST_T_ERROR]);
+    printf("%s%-6s%s... %-8d\n", TEST_TERM_COLOR_YELLOW, "Skip", TEST_TERM_COLOR_RESET, stats[TEST_T_SKIP]);
 }
 
 typedef int (*testfunc)(void);
