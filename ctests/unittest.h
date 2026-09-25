@@ -59,9 +59,9 @@
 
 #define TEST_SUITE_BEGIN(NAME) \
     int main(int argc, char *argv[]) { \
-        (void)argc; \
-        (void)argv; \
-        const char *TEST_LOCAL_SUITE_NAME = NAME != NULL ? NAME : __FILE__; \
+        (void) argc; \
+        (void) argv; \
+        const char *TEST_LOCAL_SUITE_NAME = NAME; \
         int TEST_LOCAL_STATS[TEST_STATS_ARRAY_MAX] = {0}; \
         TEST_MSG(stdout, NULL, TEST_TERM_COLOR_BRIGHT_BLUE " SUITE", "%s%s...%s", TEST_TERM_COLOR_BRIGHT_WHITE, \
             TEST_LOCAL_SUITE_NAME, TEST_TERM_COLOR_RESET);

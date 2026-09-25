@@ -7,8 +7,8 @@ void ioerr(HSTIOError e, IODescPtr x_, int status);
 
 static void hstio_error_handler() {
 #ifdef DEBUG
-    TEST_MSG(stderr, NULL, __func__, "called with status %d:\nmessage: '%s'\nmessage length: %zu\n",
-        hstio_err(), hstio_errmsg(), strlen(hstio_errmsg()));
+    TEST_MSG(stderr, NULL, __func__, "called with status %d:\nmessage: '%s'\nmessage length: %zu\n", hstio_err(),
+        hstio_errmsg(), strlen(hstio_errmsg()));
 #endif
 }
 static const size_t handlers_max = 1; // up to 32 handlers, see hstio.h
@@ -75,11 +75,9 @@ TEST_BEGIN(fn_clear_hstioerr) {
     const int err = hstio_err();
     const char *msg = hstio_errmsg();
     TEST_MARK("check error code is zero");
-    TEST_ASSERT(err == 0,
-        "expected error code to be zero, got %d\n", err);
+    TEST_ASSERT(err == 0, "expected error code to be zero, got %d\n", err);
     TEST_MARK("check error message is zero-length");
-    TEST_ASSERT(strlen(msg) == 0,
-        "expected message length to be zero, got %d\n", strlen(msg));
+    TEST_ASSERT(strlen(msg) == 0, "expected message length to be zero, got %d\n", strlen(msg));
     TEST_RETURN
 }
 
@@ -91,15 +89,15 @@ TEST_BEGIN(fn_error) {
     for (size_t i = 0; i <= BADREMOVE; i++) {
         error(i, "canary");
         const char *error_msg = hstio_errmsg();
-        TEST_ASSERT(strstr(error_msg, "canary") != NULL,
-            "Message does not contain expected value! error_msg = '%s'\n", error_msg);
+        TEST_ASSERT(strstr(error_msg, "canary") != NULL, "Message does not contain expected value! error_msg = '%s'\n",
+            error_msg);
     }
 
     TEST_MARK("check unhandled error");
     error(9999, "this is an unhandled error");
     const char *error_msg = hstio_errmsg();
-    TEST_ASSERT(strstr(error_msg, "HSTIOError") != NULL,
-        "Failed to trap unhandled error code! error_msg = '%s'\n", error_msg);
+    TEST_ASSERT(strstr(error_msg, "HSTIOError") != NULL, "Failed to trap unhandled error code! error_msg = '%s'\n",
+        error_msg);
 
     TEST_MARK("check very long message truncation");
     char huge_error_message[4096] = {0};
@@ -115,8 +113,7 @@ TEST_BEGIN(fn_error) {
     error(HSTOK, "");
     error_msg = hstio_errmsg();
     error_len = strlen(error_msg);
-    TEST_ASSERT(error_len == 0,
-        "Message should be empty! error_msg = '%s'\n", error_msg);
+    TEST_ASSERT(error_len == 0, "Message should be empty! error_msg = '%s'\n", error_msg);
 
     pop_hstioerr();
     TEST_RETURN
