@@ -15,68 +15,79 @@ static const size_t handlers_max = 1; // up to 32 handlers, see hstio.h
 
 TEST_BEGIN(macro_Pix) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(macro_PixColumnMajor) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(macro_PPixColumnMajor) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(macro_DQPix) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(macro_DQSetPix) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_copyDataSection) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_hstio_err) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_hstio_errmsg) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_push_hstioerr) {
-    TEST_DESCRIBE("check state after pushing handler onto stack");
+    TEST_MARK("check state after pushing handler onto stack");
     for (size_t i = 0; i < handlers_max; i++) {
         TEST_ASSERT(push_hstioerr(hstio_error_handler) == 1, "%s", "push failed");
     }
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_pop_hstioerr) {
-    TEST_DESCRIBE("check state after poppping handler from stack");
+    TEST_MARK("check state after poppping handler from stack");
     for (size_t i = 0; i < handlers_max; i++) {
         TEST_ASSERT(pop_hstioerr() == 0, "%s", "pop failed");
     }
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_clear_hstioerr) {
-    TEST_DESCRIBE("check error state after clear");
+    TEST_MARK("check error state after clear");
     clear_hstioerr();
     const int err = hstio_err();
     const char *msg = hstio_errmsg();
-    TEST_DESCRIBE("check error code is zero");
+    TEST_MARK("check error code is zero");
     TEST_ASSERT(err == 0,
         "expected error code to be zero, got %d\n", err);
-    TEST_DESCRIBE("check error message is zero-length");
+    TEST_MARK("check error message is zero-length");
     TEST_ASSERT(strlen(msg) == 0,
         "expected message length to be zero, got %d\n", strlen(msg));
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_error) {
     size_t error_len = 0;
     push_hstioerr(hstio_error_handler);
 
-    TEST_DESCRIBE("check contents of error_msg buffer");
+    TEST_MARK("check contents of error_msg buffer");
     for (size_t i = 0; i <= BADREMOVE; i++) {
         error(i, "canary");
         const char *error_msg = hstio_errmsg();
@@ -84,13 +95,13 @@ TEST_BEGIN(fn_error) {
             "Message does not contain expected value! error_msg = '%s'\n", error_msg);
     }
 
-    TEST_DESCRIBE("check unhandled error");
+    TEST_MARK("check unhandled error");
     error(9999, "this is an unhandled error");
     const char *error_msg = hstio_errmsg();
     TEST_ASSERT(strstr(error_msg, "HSTIOError") != NULL,
         "Failed to trap unhandled error code! error_msg = '%s'\n", error_msg);
 
-    TEST_DESCRIBE("check very long message truncation");
+    TEST_MARK("check very long message truncation");
     char huge_error_message[4096] = {0};
     memset(huge_error_message, '?', sizeof(huge_error_message) - 1);
     error(BADNAME, huge_error_message);
@@ -100,7 +111,7 @@ TEST_BEGIN(fn_error) {
     TEST_ASSERT(strstr(error_msg, expected) != NULL,
         "Message does not contain expected value, '%s'! error_msg = '%s'\n", expected, error_msg);
 
-    TEST_DESCRIBE("HSTOK with an empty error string produces an empty string");
+    TEST_MARK("HSTOK with an empty error string produces an empty string");
     error(HSTOK, "");
     error_msg = hstio_errmsg();
     error_len = strlen(error_msg);
@@ -108,15 +119,18 @@ TEST_BEGIN(fn_error) {
         "Message should be empty! error_msg = '%s'\n", error_msg);
 
     pop_hstioerr();
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_openSingleGroupLine) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_closeSingleGroupLine) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_fcloseNull) {
     FILE *fp = fopen("/dev/null", "w");
@@ -124,12 +138,13 @@ TEST_BEGIN(fn_fcloseNull) {
         TEST_MSG(stderr, TEST_TERM_COLOR_RED, __func__, "Error opening /dev/null");
         TEST_FORCE_ERROR;
     }
-    TEST_DESCRIBE("check closing a file handle");
+    TEST_MARK("check closing a file handle");
     TEST_ASSERT(fcloseNull(fp) == 0, "%s", "stream did not close\n");
 
-    TEST_DESCRIBE("check passing NULL file handle returns zero");
+    TEST_MARK("check passing NULL file handle returns zero");
     TEST_ASSERT(fcloseNull(NULL) == 0, "%s", "function returned non-zero on NULL file handle\n");
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_fcloseWithStatus) {
     FILE *fp = fopen("/dev/null", "w");
@@ -137,217 +152,274 @@ TEST_BEGIN(fn_fcloseWithStatus) {
         TEST_MSG(stderr, TEST_TERM_COLOR_RED, __func__, "Error opening /dev/null");
         TEST_FORCE_ERROR;
     }
-    TEST_DESCRIBE("check closing a file handle");
+    TEST_MARK("check closing a file handle");
     TEST_ASSERT(fcloseWithStatus(&fp) == 0, "%s", "stream did not close\n");
 
-    TEST_DESCRIBE("check file handle is NULL");
+    TEST_MARK("check file handle is NULL");
     TEST_ASSERT(fp == NULL, "%s", "stream is not NULL\n");
 
     // fcloseWithStatus returns IO_ERROR when fclose() fails. Intentionally
     // forcing fclose() to fail is difficult. Accessing a stream after you've
     // called fclose() on it is purely undefined behavior.
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_ckNewFile) {
-    FILE *fp = fopen("testnewfile", "w");
+    TEST_MARK("generating test file");
+    const char *filename = "testnewfile";
+    FILE *fp = fopen(filename, "w");
     if (!fp) {
-        TEST_MSG(stderr, TEST_TERM_COLOR_RED, __func__, "Error opening testnewfile\n");
+        TEST_MSG(stderr, TEST_TERM_COLOR_BRIGHT_RED, __func__, "Error opening %s\n", filename);
         TEST_FORCE_ERROR;
     }
-    fprintf(fp, "testnewfile");
+    fprintf(fp, "hello world from %s\n", filename);
     fclose(fp);
 
-    const int exists = ckNewFile("testnewfile");
-    TEST_DESCRIBE("check non-zero return value if file exists");
-    TEST_ASSERT(exists == 1, "existence check failed for testnewfile, returned %d\n", exists);
-} TEST_END
+    int exists = 0;
+    exists = ckNewFile((char *) filename);
+    TEST_MARK("check non-zero return value if file exists");
+    TEST_ASSERT(exists == 1, "existence check failed, returned %d\n", exists);
+
+    TEST_MARK("removing test file");
+    remove(filename);
+    exists = ckNewFile((char *) filename);
+    TEST_MARK("check zero return value if file does not exist");
+    TEST_ASSERT(exists == 0, "existence check failed, returned %d\n", exists);
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_getSci) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_putSci) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_getErr) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_putErr) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_getDQ) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_putDQ) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_getSmpl) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_putSmpl) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_getIntg) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_putIntg) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_putSciSect) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_putErrSect) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_putDQSect) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_putSmplSect) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_putIntgSect) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_getSciHdr) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_getErrHdr) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_getDQHdr) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_getSciLine) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_getErrLine) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_getDQLine) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_getFloatHD) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_putFloatHD) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_getShortHD) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_putShortHD) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_putFloatHDSect) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_putShortHDSect) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_getFloatHdr) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_getShortHdr) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_getSingleGroup) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_getSingleGroupLine) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_putSingleGroupHdr) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_putSingleGroup) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_putSingleGroupSect) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_getSingleNicmosGroup) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_putSingleNicmosGroupHdr) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_putSingleNicmosGroup) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_putSingleNicmosGroupSect) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_getMultiGroupHdr) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_getMultiGroup) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_putMultiGroupHdr) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_putMultiGroup) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_getMultiNicmosGroupHdr) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_getMultiNicmosGroup) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_putMultiNicmosGroupHdr) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 TEST_BEGIN(fn_putMultiNicmosGroup) {
     TEST_FORCE_SKIP
-} TEST_END
+    TEST_RETURN
+}
 
 
-TEST_SUITE_BEGIN() {
+TEST_SUITE_BEGIN(__FILE__) {
     const testfunc tests[] = {
         test_macro_Pix,
         test_macro_PixColumnMajor,
@@ -411,8 +483,8 @@ TEST_SUITE_BEGIN() {
         test_fn_getMultiNicmosGroupHdr,
         test_fn_getMultiNicmosGroup,
         test_fn_putMultiNicmosGroupHdr,
-        test_fn_putMultiNicmosGroup
+        test_fn_putMultiNicmosGroup,
     };
     TEST_SUITE_RUN(tests);
-    TEST_STATS_SHOW();
-} TEST_SUITE_END
+    TEST_SUITE_RETURN
+}
