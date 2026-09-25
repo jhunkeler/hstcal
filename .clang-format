@@ -55,6 +55,7 @@ PointerAlignment: Right
 PPIndentWidth: 4
 ReflowComments: false
 SortIncludes: Never
+SpaceAfterCStyleCast: true
 SpacesInParens: Custom
 SpacesInParensOptions:
   InEmptyParentheses: false
