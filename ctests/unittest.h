@@ -22,7 +22,7 @@
 #define TEST_LIB_VERSION_PATCH "0"
 #define TEST_LIB_VERSION TEST_LIB_VERSION_MAJOR "." TEST_LIB_VERSION_MINOR "." TEST_LIB_VERSION_PATCH
 
-static void TEST_SHOW_LIB_INFO() {
+static inline void TEST_SHOW_LIB_INFO() {
     printf("UNITTEST v%s\n", TEST_LIB_VERSION);
     printf("Copyright (C) 2026 Association of Universities for Research in Astronomy (AURA)\n");
     printf("\n");
@@ -63,7 +63,7 @@ static const char *TEST_SUITE_NAME;
 
 // Valid unit_test_fixture array indicies
 enum {
-    TEST_FUNC_SETUP=0,
+    TEST_FUNC_SETUP = 0,
     TEST_FUNC_TEARDOWN,
     TEST_FUNC_ARRAY_MAX,
 };
@@ -72,7 +72,7 @@ enum {
  * Valid unit_test return codes
  */
 enum {
-    TEST_T_PASS=0,
+    TEST_T_PASS = 0,
     TEST_T_FAIL,
     TEST_T_ERROR,
     TEST_T_SKIP,
@@ -120,9 +120,9 @@ static const int TEST_EXE_USES_STACK_PROTECTOR =
 #elif defined(__SSP_STRONG__)
     2;
 #elif defined(__SSP__)
-    3;
+                3;
 #else
-    0;
+                0;
 #endif
 
 static int TEST_VERBOSE() {
@@ -169,7 +169,7 @@ static inline const char *TEST_SUITE_SAFE_NAME(const char *s) {
     }
 
     const int len = snprintf(name, sizeof(name), "%s", s);
-    if (len > (int) sizeof(name)) {
+    if (len >= (int) sizeof(name)) {
         fprintf(stderr, "Test suite name is too long (>%zu characters)! String truncated!\n", sizeof(name) - 1);
     }
     for (size_t i = 0; i < strlen(s); i++) {
@@ -204,15 +204,19 @@ static inline const char *TEST_SUITE_SAFE_NAME(const char *s) {
                 default: \
                     ssp_type = ""; \
             }; \
-            TEST_MSG(stdout, NULL, TEST_TERM_COLOR_BRIGHT_BLUE "  EXE", " %sCompiled with _FORTIFY_SOURCE...%s %s (level %d)%s", TEST_TERM_COLOR_BRIGHT_WHITE, \
-               TEST_TERM_COLOR_RESET, TEST_EXE_USES_FORTIFY_SOURCE ? "Yes" : "No", TEST_EXE_USES_FORTIFY_SOURCE, TEST_TERM_COLOR_RESET); \
-            TEST_MSG(stdout, NULL, TEST_TERM_COLOR_BRIGHT_BLUE "  EXE", " %sCompiled with stack protector...%s %s%s", TEST_TERM_COLOR_BRIGHT_WHITE, \
-                TEST_TERM_COLOR_RESET, ssp_type, TEST_TERM_COLOR_RESET); \
-            TEST_MSG(stdout, NULL, TEST_TERM_COLOR_BRIGHT_BLUE "  EXE", " %sCompiled with AddressSanitizer...%s %s%s", TEST_TERM_COLOR_BRIGHT_WHITE, \
-                TEST_TERM_COLOR_RESET, TEST_EXE_USES_ASAN ? "Yes" : "No", TEST_TERM_COLOR_RESET); \
-            TEST_MSG(stdout, NULL, TEST_TERM_COLOR_BRIGHT_BLUE "  EXE", " %sCompiled with coverage...%s %s%s", TEST_TERM_COLOR_BRIGHT_WHITE, \
-                TEST_TERM_COLOR_RESET, TEST_EXE_USES_COVERAGE ? "Yes" : "No", TEST_TERM_COLOR_RESET); \
-        } \
+            TEST_MSG(stdout, NULL, TEST_TERM_COLOR_BRIGHT_BLUE "  EXE", \
+                " %sCompiled with _FORTIFY_SOURCE...%s %s (level %d)%s", TEST_TERM_COLOR_BRIGHT_WHITE, \
+                TEST_TERM_COLOR_RESET, TEST_EXE_USES_FORTIFY_SOURCE ? "Yes" : "No", TEST_EXE_USES_FORTIFY_SOURCE, \
+                TEST_TERM_COLOR_RESET); \
+            TEST_MSG(stdout, NULL, TEST_TERM_COLOR_BRIGHT_BLUE "  EXE", " %sCompiled with stack protector...%s %s%s", \
+                TEST_TERM_COLOR_BRIGHT_WHITE, TEST_TERM_COLOR_RESET, ssp_type, TEST_TERM_COLOR_RESET); \
+            TEST_MSG(stdout, NULL, TEST_TERM_COLOR_BRIGHT_BLUE "  EXE", " %sCompiled with AddressSanitizer...%s %s%s", \
+                TEST_TERM_COLOR_BRIGHT_WHITE, TEST_TERM_COLOR_RESET, TEST_EXE_USES_ASAN ? "Yes" : "No", \
+                TEST_TERM_COLOR_RESET); \
+            TEST_MSG(stdout, NULL, TEST_TERM_COLOR_BRIGHT_BLUE "  EXE", " %sCompiled with coverage...%s %s%s", \
+                TEST_TERM_COLOR_BRIGHT_WHITE, TEST_TERM_COLOR_RESET, TEST_EXE_USES_COVERAGE ? "Yes" : "No", \
+                TEST_TERM_COLOR_RESET); \
+        }
 
 #define TEST_SUITE_RETURN \
     TEST_STATS_SHOW(); \
@@ -223,7 +227,7 @@ static inline const char *TEST_SUITE_SAFE_NAME(const char *s) {
     } // DO NOT REMOVE THIS BRACE
 
 #define TEST_SUITE_RUN(TESTFUNC_ARRAY) \
-    TEST_DISABLE_BUFFERING();          \
+    TEST_DISABLE_BUFFERING(); \
     const size_t TEST_LOCAL_TESTFUNC_COUNT = sizeof((TESTFUNC_ARRAY)) / sizeof((TESTFUNC_ARRAY)[0]); \
     for (size_t i = 0; i < TEST_LOCAL_TESTFUNC_COUNT; i++) { \
         const unit_test TEST_LOCAL_TESTFUNC = (TESTFUNC_ARRAY)[i]; \
@@ -295,7 +299,7 @@ static inline const char *TEST_SUITE_SAFE_NAME(const char *s) {
         snprintf(TEST_LOCAL_REDIRECT.unit_suite, sizeof(TEST_LOCAL_REDIRECT.unit_suite), "%s", TEST_SUITE_NAME); \
         snprintf(TEST_LOCAL_REDIRECT.unit_name, sizeof(TEST_LOCAL_REDIRECT.unit_name), "%s", __func__); \
         printf(TEST_TERM_COLOR_BRIGHT_BLUE "  UNIT" TEST_TERM_COLOR_RESET TEST_TERM_COLOR_BRIGHT_WHITE \
-            " %s... " TEST_TERM_COLOR_RESET, \
+                                           " %s... " TEST_TERM_COLOR_RESET, \
             __func__); \
         TEST_REDIRECT_OUTPUT(&TEST_LOCAL_REDIRECT); \
         TEST_SUITE_FIXTURE_RUN(TEST_FUNC_SETUP);
@@ -309,17 +313,18 @@ static inline const char *TEST_SUITE_SAFE_NAME(const char *s) {
     } while (0);
 
 #define TEST_RETURN \
-        do { \
-            if (TEST_LOCAL_ERROR_COUNT) { \
-                return TEST_THROW(TEST_T_FAIL); \
-            } \
-            return TEST_THROW(TEST_T_PASS); \
-        } while (0); \
+    do { \
+        if (TEST_LOCAL_ERROR_COUNT) { \
+            return TEST_THROW(TEST_T_FAIL); \
+        } \
+        return TEST_THROW(TEST_T_PASS); \
+    } while (0); \
     }
 
 #define TEST_MARK(DESC, ...) \
     do { \
-        printf(TEST_TERM_COLOR_BRIGHT_CYAN "MARK" TEST_TERM_COLOR_RESET " %s\n" TEST_TERM_COLOR_RESET, DESC, ##__VA_ARGS__); \
+        printf(TEST_TERM_COLOR_BRIGHT_CYAN "MARK" TEST_TERM_COLOR_RESET " %s\n" TEST_TERM_COLOR_RESET, DESC, \
+            ##__VA_ARGS__); \
     } while (0)
 
 #define TEST_ASSERT(COND, REASON, ...) \
@@ -331,7 +336,7 @@ static inline const char *TEST_SUITE_SAFE_NAME(const char *s) {
         if (!(COND)) { \
             TEST_MSG(stderr, TEST_TERM_COLOR_BRIGHT_RED "ASSERTION FAILED", "", \
                 TEST_TERM_COLOR_MAGENTA " " #COND TEST_TERM_COLOR_RESET TEST_TERM_COLOR_RED \
-                " BECAUSE " TEST_TERM_COLOR_RESET REASON, \
+                                        " BECAUSE " TEST_TERM_COLOR_RESET REASON, \
                 ##__VA_ARGS__); \
             TEST_FAILED \
         } \
@@ -396,8 +401,7 @@ static inline int TEST_REDIRECT_OUTPUT(struct TestRedirect *r) {
     }
 
     char logfile[4096] = {0};
-    snprintf(logfile, sizeof(logfile), "%s/%s.log", logdir,
-        strlen(r->unit_name) ? r->unit_name : "unnamed_unit");
+    snprintf(logfile, sizeof(logfile), "%s/%s.log", logdir, strlen(r->unit_name) ? r->unit_name : "unnamed_unit");
 
     int fd = open(logfile, O_RDWR | O_CREAT | O_TRUNC, 0600);
     if (fd < 0) {
@@ -447,17 +451,17 @@ static inline int TEST_REDIRECT_OUTPUT_RESTORE(struct TestRedirect *r) {
 }
 
 // ANSI Control Sequence Introducer (CSI)
-#define TEST_ANSI_CSI_ESC_1 0x1b        // ESC
-#define TEST_ANSI_CSI_ESC_2 0x5b        // '['
+#define TEST_ANSI_CSI_ESC_1 0x1b // ESC
+#define TEST_ANSI_CSI_ESC_2 0x5b // '['
 
-#define TEST_ANSI_CSI_PARAM_LOW 0x30    // '0'
-#define TEST_ANSI_CSI_PARAM_HIGH 0x3f   // '?'
+#define TEST_ANSI_CSI_PARAM_LOW 0x30 // '0'
+#define TEST_ANSI_CSI_PARAM_HIGH 0x3f // '?'
 
-#define TEST_ANSI_CSI_INTR_LOW 0x20     // ' '
-#define TEST_ANSI_CSI_INTR_HIGH 0x2F    // '/'
+#define TEST_ANSI_CSI_INTR_LOW 0x20 // ' '
+#define TEST_ANSI_CSI_INTR_HIGH 0x2F // '/'
 
-#define TEST_ANSI_CSI_FINAL_LOW 0x40      // '@'
-#define TEST_ANSI_CSI_FINAL_HIGH 0x7e     // '~'
+#define TEST_ANSI_CSI_FINAL_LOW 0x40 // '@'
+#define TEST_ANSI_CSI_FINAL_HIGH 0x7e // '~'
 
 static inline void strip_ansi_codes(char *s) {
     char *src = s;
@@ -585,7 +589,10 @@ static inline int TEST_REDIRECT_OUTPUT_DUMP(struct TestRedirect *r) {
 
     char line[0x1000] = {0};
     if (TEST_VERBOSE()) {
-        fprintf(stdout, TEST_TERM_COLOR_BRIGHT_BLUE "  DUMP" TEST_TERM_COLOR_RESET TEST_TERM_COLOR_BRIGHT_WHITE " %s" TEST_TERM_COLOR_RESET "\n", r->filename);
+        fprintf(stdout,
+            TEST_TERM_COLOR_BRIGHT_BLUE "  DUMP" TEST_TERM_COLOR_RESET TEST_TERM_COLOR_BRIGHT_WHITE
+                                        " %s" TEST_TERM_COLOR_RESET "\n",
+            r->filename);
     }
     while (fgets(line, sizeof(line) - 1, fp) != NULL) {
         if (is_ansi_and_empty(line)) {
@@ -677,7 +684,8 @@ static inline int TEST_THROW_(const int action, struct TestRedirect *r) {
 #define TEST_THROW_ERROR(MESSAGE, ...) \
     do { \
         if (MESSAGE && strlen(MESSAGE)) { \
-            TEST_MSG(stderr, TEST_TERM_COLOR_BRIGHT_CYAN "EXCEPTION " TEST_TERM_COLOR_BOLD TEST_TERM_COLOR_BRIGHT_RED, "", MESSAGE, ##__VA_ARGS__); \
+            TEST_MSG(stderr, TEST_TERM_COLOR_BRIGHT_CYAN "EXCEPTION " TEST_TERM_COLOR_BOLD TEST_TERM_COLOR_BRIGHT_RED, \
+                "", MESSAGE, ##__VA_ARGS__); \
         } \
         return TEST_THROW(TEST_T_ERROR); \
     } while (0)
@@ -685,7 +693,8 @@ static inline int TEST_THROW_(const int action, struct TestRedirect *r) {
 #define TEST_THROW_FAIL(MESSAGE, ...) \
     do { \
         if (MESSAGE && strlen(MESSAGE)) { \
-            TEST_MSG(stderr, TEST_TERM_COLOR_BRIGHT_CYAN "EXCEPTION " TEST_TERM_COLOR_RED, "", MESSAGE, ##__VA_ARGS__); \
+            TEST_MSG(stderr, TEST_TERM_COLOR_BRIGHT_CYAN "EXCEPTION " TEST_TERM_COLOR_RED, "", MESSAGE, \
+                ##__VA_ARGS__); \
         } \
         return TEST_THROW(TEST_T_FAIL); \
     } while (0)
@@ -693,7 +702,8 @@ static inline int TEST_THROW_(const int action, struct TestRedirect *r) {
 #define TEST_THROW_SKIP(MESSAGE, ...) \
     do { \
         if (MESSAGE && strlen(MESSAGE)) { \
-            TEST_MSG(stderr, TEST_TERM_COLOR_BRIGHT_CYAN "REASON " TEST_TERM_COLOR_YELLOW, "", MESSAGE, ##__VA_ARGS__); \
+            TEST_MSG(stderr, TEST_TERM_COLOR_BRIGHT_CYAN "REASON " TEST_TERM_COLOR_YELLOW, "", MESSAGE, \
+                ##__VA_ARGS__); \
         } \
         return TEST_THROW(TEST_T_SKIP); \
     } while (0)
@@ -720,9 +730,7 @@ static inline int TEST_VMSG(FILE *stream, const char *color, const char *prefix,
     while ((token = strsep(&tokens, "\n")) != NULL) {
         if (strlen(token)) {
             fprintf(stream, TEST_TERM_COLOR_BRIGHT_WHITE "%s" TEST_TERM_COLOR_RESET "%s%s%s\n" TEST_TERM_COLOR_RESET,
-                prefix && strlen(prefix) ? " " : "",
-                prefix && strlen(prefix) ? prefix : "",
-                color ? color : "", token);
+                prefix && strlen(prefix) ? " " : "", prefix && strlen(prefix) ? prefix : "", color ? color : "", token);
             fprintf(stream, TEST_TERM_COLOR_RESET);
         }
     }
@@ -847,7 +855,8 @@ static inline char **TEST_FILE_AS_ARRAY(const char *filename, size_t *lines_coun
  * @param result_lineno the line number where the pattern matched (zero-index)
  * @return 0 = not found, 1 = found, -1 = error
  */
-static inline int TEST_FILE_CONTAINS(const char *filename, const char *pattern, const ssize_t range_start, const ssize_t range_end, char **result, size_t *result_lineno) {
+static inline int TEST_FILE_CONTAINS(const char *filename, const char *pattern, const ssize_t range_start,
+    const ssize_t range_end, char **result, size_t *result_lineno) {
     size_t line_count = 0;
     char **lines = TEST_FILE_AS_ARRAY(filename, &line_count);
     if (!lines) {
@@ -878,11 +887,11 @@ static inline int TEST_FILE_CONTAINS(const char *filename, const char *pattern, 
     }
     goto not_found;
 
-    found:
+found:
     TEST_ARRAY_FREE(lines, line_count);
     return 1;
 
-    not_found:
+not_found:
     if (result) {
         *result = NULL;
     }
