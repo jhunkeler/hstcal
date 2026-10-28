@@ -1,4 +1,4 @@
-#include "unittest.h"
+#include "stcunit.h"
 #include "hstio.h"
 
 // Load symbols that should be exported but aren't

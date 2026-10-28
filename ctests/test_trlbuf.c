@@ -1,4 +1,4 @@
-#include "unittest.h"
+#include "stcunit.h"
 #include "trlbuf.h"
 
 // Carve out a chunk of zeroes to compare init/deinit states against

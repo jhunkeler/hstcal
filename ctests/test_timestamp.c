@@ -1,5 +1,5 @@
 #include <stddef.h>
-#include "unittest.h"
+#include "stcunit.h"
 #include "trlbuf.h"
 #include "timestamp.h"
 

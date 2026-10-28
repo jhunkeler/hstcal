@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include "hstcal_memory.h"
-#include "unittest.h"
+#include "stcunit.h"
 
 static void addPtr_freeFunc_callback(void *ptr) {
     printf("FREEING POINTER %p (within %s)\n", ptr, __func__);
