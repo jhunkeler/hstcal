@@ -1,3 +1,20 @@
+set(STCUNIT_VERSION 1.0.0)
+set(STCUNIT_ARCHIVE ${STCUNIT_VERSION}.tar.gz)
+set(STCUNIT_DIR stcunit-${STCUNIT_VERSION})
+
+if(NOT EXISTS "${STCUNIT_DIR}")
+    message(STATUS "Downloading ${STCUNIT_DIR}")
+    file(DOWNLOAD https://github.com/spacetelescope/stcunit/archive/refs/tags/${STCUNIT_ARCHIVE} ${STCUNIT_ARCHIVE})
+    message(STATUS "Unpacking ${STCUNIT_DIR}")
+    execute_process(COMMAND ${CMAKE_COMMAND} -E tar -xvf "${STCUNIT_ARCHIVE}"
+                    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+                    RESULT_VARIABLE STCUNIT_USABLE)
+    if (NOT STCUNIT_USABLE EQUAL 0)
+        message(FATAL_ERROR "Unpack failed in ${CMAKE_BINARY_DIR}")
+    endif()
+endif()
+include_directories(${CMAKE_BINARY_DIR}/${STCUNIT_DIR})
+
 add_executable(testphot
     test_getphttab.c
 )

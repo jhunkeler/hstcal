@@ -1,4 +1,4 @@
-#include "unittest.h"
+#include "stcunit.h"
 #include "str_util.h"
 
 #include <ctype.h>

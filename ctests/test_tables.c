@@ -1,4 +1,4 @@
-#include "unittest.h"
+#include "stcunit.h"
 
 TEST_UNIT(c_imtopen) {
     TEST_THROW_SKIP("Stub");

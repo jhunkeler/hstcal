@@ -1,4 +1,4 @@
-#include "unittest.h"
+#include "stcunit.h"
 
 static inline int setup() {
     // return 0 on success, or non-zero on error
