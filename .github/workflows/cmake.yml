@@ -123,7 +123,7 @@ jobs:
     - name: Generate coverage summary
       if: contains(matrix.cmake_options, 'COVERAGE')
       run: |
-        gcovr -r . --exclude ctests --markdown coverage.md --markdown-title "SOURCE CODE"
+        gcovr -r . --exclude '.*stcunit*' --exclude ctests --markdown coverage.md --markdown-title "SOURCE CODE"
         gcovr -r . build/ctests --markdown coverage-ctests.md --markdown-title "UNIT TESTS"
         
         echo "### Coverage summary" >> $GITHUB_STEP_SUMMARY
