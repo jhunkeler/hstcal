@@ -3,6 +3,16 @@
 #include "hstcal_memory.h"
 #include "stcunit.h"
 
+static void *newPtrRegister(void) {
+    void *this = malloc(sizeof(PtrRegister));
+    if (!this) {
+        return NULL;
+    }
+    initPtrRegister(this);
+    addPtr(this, this, &free); // Note: freeFunctions[0] is ignored anyhow
+    return this;
+}
+
 static void addPtr_freeFunc_callback(void *ptr) {
     printf("FREEING POINTER %p (within %s)\n", ptr, __func__);
     free(ptr);
