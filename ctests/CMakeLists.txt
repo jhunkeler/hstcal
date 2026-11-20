@@ -1,11 +1,18 @@
-set(STCUNIT_VERSION 1.0.0)
+set(CACHE{STCUNIT_VERSION}
+        TYPE STRING
+        HELP "STCUNIT version to install"
+        VALUE "1.1.0")
+set(CACHE{STCUNIT_ARCHIVE_REFTYPE}
+        TYPE STRING
+        HELP "heads (i.e. branches) or refs (i.e. tags)"
+        VALUE "tags")
 set(STCUNIT_ARCHIVE ${STCUNIT_VERSION}.tar.gz)
 set(STCUNIT_DIR stcunit-${STCUNIT_VERSION})
 set(STCUNIT_DEST ${CMAKE_BINARY_DIR}/ctests)
 
 if(NOT EXISTS "${STCUNIT_DEST}/${STCUNIT_DIR}")
     message(STATUS "Downloading ${STCUNIT_DIR}")
-    file(DOWNLOAD https://github.com/spacetelescope/stcunit/archive/refs/tags/${STCUNIT_ARCHIVE} ${STCUNIT_DEST}/${STCUNIT_ARCHIVE})
+    file(DOWNLOAD https://github.com/spacetelescope/stcunit/archive/refs/${STCUNIT_ARCHIVE_REFTYPE}/${STCUNIT_ARCHIVE} ${STCUNIT_DEST}/${STCUNIT_ARCHIVE})
     message(STATUS "Unpacking ${STCUNIT_DIR}")
     execute_process(COMMAND ${CMAKE_COMMAND} -E tar -xvf "${STCUNIT_ARCHIVE}"
                     WORKING_DIRECTORY "${STCUNIT_DEST}"
